@@ -79,3 +79,13 @@ input.chosen {
     padding: 3px;
     padding-bottom: 0;
 }
+
+
+#map-canvas {
+    width: 570px;
+    height: 500px;
+}
+
+#map-canvas img {
+    max-width: none;
+}

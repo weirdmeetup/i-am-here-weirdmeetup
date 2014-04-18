@@ -49,7 +49,7 @@ var NonEmptyString = Match.Where(function (x) {
 
 var Coordinate = Match.Where(function (x) {
   check(x, Number);
-  return x >= 0 && x <= 1;
+  return x >= -370 && x <= 370;
 });
 
 createParty = function (options) {

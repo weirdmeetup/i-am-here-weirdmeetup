@@ -1,5 +1,5 @@
 <head>
-  <title>All Tomorrow's Parties</title>
+  <title>I'm here #이상한모임</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -23,8 +23,9 @@
       <div class="span10">
         <div class="header row">
           <div class="span5">
-            <h3 style="margin-bottom: 0px">I'm here with <a
-            href="http://we.weirdmeetup.com/">#이상한모임</a></h3>
+            <h3 style="margin-bottom: 0px">I'm here <a
+            href="http://we.weirdmeetup.com/" target="_blank">#이상한모임</a></h3>
+            <div><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></div>
           </div>
           <div class="span5">
             <div style="float: right">
@@ -38,7 +39,7 @@
             {{> map}}
             {{#if currentUser}}
             <div class="pagination-centered">
-              <em><small>Double click the map to post a party!</small></em>
+              <em><small>지도를 더블클릭하면 이상한 모임을 시작할 수 있습니당!</small></em>
             </div>
             {{/if}}
           </div>
@@ -54,18 +55,7 @@
 </template>
 
 <template name="map">
-  <div class="map">
-    <svg width="500" height="500">
-      <circle class="callout" cx=-100 cy=-100></circle>
-      <g class="circles"></g>
-      <g class="labels"></g>
-    </svg>
-    <div>
-      <small class="attribution muted">&copy;
-        <a href="http://www.openstreetmap.org/?lat=37.78212&lon=-122.40146&zoom=15&layers=M"
-           target="_blank">OpenStreetMap</a> contributors</small>
-    </div>
-  </div>
+  <div id="map-canvas"></div>
 </template>
 
 <template name="details">
@@ -80,32 +70,37 @@
 
         <div class="rsvp-buttons">
           {{#if currentUser}}
-            <input type="button" value="I'm going!"
+            <input type="button" value="나도 갈래염!"
                    class="btn btn-small rsvp_yes {{maybeChosen "yes"}}">
-            <input type="button" value="Maybe"
+            <input type="button" value="아마도"
                    class="btn btn-small rsvp_maybe {{maybeChosen "maybe"}}">
-            <input type="button" value="No"
+            <input type="button" value="못가요.."
                    class="btn btn-small rsvp_no {{maybeChosen "no"}}">
           {{else}}
-            <i>Sign in to RSVP for this party.</i>
+            <i>가입하고 이상한 모임 함께해요!</i>
           {{/if}}
-          <p><small>Posted by {{creatorName}}</small></p>
+          <p><small>{{creatorName}}님 작성</small></p>
         </div>
 
         {{#if canRemove}}
           <div class="alert alert-info"><small>
-              You posted this party and nobody is signed up to go, so if
-              you like, you could
-              <b><a href="#" class="remove">delete this listing</a></b>.
+            아무도 안온다면 과감하게 
+              <b><a href="#" class="remove">목록에서 삭제하기</a></b>.
+          </small></div>
+        {{/if}}
+        {{#if canFinish}}
+          <div class="alert alert-info"><small>
+            이상한 모임이 종료되었다면 
+              <b><a href="#" class="remove">목록에서 삭제하기</a></b>.
           </small></div>
         {{/if}}
       {{/with}}
     {{else}}
       <h1 class="muted pagination-centered">
         {{#if anyParties}}
-          Click a party to select it
+          왼쪽 맵에서 모임 표시를 눌러보세요
         {{else}}
-          Sign in and double click the map to post a party
+          가입한 후 맵을 더블클릭하면 모임을 시작할 수 있어요
         {{/if}}
       </h1>
     {{/if}}
@@ -114,11 +109,11 @@
 
 <template name="attendance">
   <div class="attendance well well-small">
-    <div class="muted who"><b>Who</b></div>
+    <div class="muted who"><b>대상</b></div>
     {{#if public}}
       <div>
-        <b>Everyone</b>
-        <span class="label label-inverse pull-right">Invited</span>
+        <b>누구나</b>
+        <span class="label label-inverse pull-right">공개모임</span>
       </div>
     {{/if}}
 
@@ -126,13 +121,13 @@
       <div>
         {{rsvpName}}
         {{#if rsvpIs "yes"}}
-          <span class="label label-success pull-right">Going</span>
+          <span class="label label-success pull-right">참석</span>
         {{/if}}
         {{#if rsvpIs "maybe"}}
-          <span class="label label-info pull-right">Maybe</span>
+          <span class="label label-info pull-right">불확실</span>
         {{/if}}
         {{#if rsvpIs "no"}}
-          <span class="label label pull-right">No</span>
+          <span class="label label pull-right">불참</span>
         {{/if}}
       </div>
     {{/each}}
@@ -141,7 +136,7 @@
       {{#each outstandingInvitations}}
         <div>
           {{invitationName}}
-          <span class="label label-inverse pull-right">Invited</span>
+          <span class="label label-inverse pull-right">비공개모임</span>
         </div>
       {{/each}}
     {{/unless}}
@@ -152,7 +147,7 @@
 
     {{#if canInvite}}
       <div class="invite">
-        <a href="#" class="btn btn-mini invite">Invite people</a>
+        <a href="#" class="btn btn-mini invite">사람들을 초대하자 으하하</a>
       </div>
     {{/if}}
   </div>
@@ -163,7 +158,7 @@
   <div class="modal">
     <div class="modal-header">
       <button type="button" class="close cancel">&times;</button>
-      <h3>Add party</h3>
+      <h3>이상한모임 시작하기</h3>
     </div>
 
     <div class="modal-body">
@@ -171,21 +166,21 @@
         <div class="alert alert-error">{{error}}</div>
       {{/if}}
 
-      <label>Title</label>
+      <label>모임명</label>
       <input type="text" class="title span5">
 
-      <label>Description</label>
+      <label>모임 설명 및 장소</label>
       <textarea class="description span5"></textarea>
 
       <label class="checkbox">
         <input type="checkbox" class="private">
-        Private party &mdash; invitees only
+        비공개 모임 (초대한 사람만 참가)
       </label>
     </div>
 
     <div class="modal-footer">
-      <a href="#" class="btn cancel">Cancel</a>
-      <a href="#" class="btn btn-primary save">Add party</a>
+      <a href="#" class="btn cancel">취소</a>
+      <a href="#" class="btn btn-primary save">모임 만들기</a>
     </div>
   </div>
 </template>
@@ -195,22 +190,22 @@
   <div class="modal">
     <div class="modal-header">
       <button type="button" class="close done">&times;</button>
-      <h3>Invite people</h3>
+      <h3>참석자 초대하기</h3>
     </div>
 
     <div class="modal-body">
       {{#each uninvited}}
         <div class="invite-row">
-          <a href="#" class="btn invite">Invite</a>
+          <a href="#" class="btn invite">초대하기</a>
           {{displayName}}
         </div>
       {{else}}
-        Everyone on the site has already been invited.
+        이미 사이트에 모든 사람을 초대했습니다.
       {{/each}}
     </div>
 
     <div class="modal-footer">
-      <a href="#" class="btn btn-primary done">Done</a>
+      <a href="#" class="btn btn-primary done">완료</a>
     </div>
   </div>
 </template>
