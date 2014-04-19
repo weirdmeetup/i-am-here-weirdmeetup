@@ -1,5 +1,23 @@
 // All Tomorrow's Parties -- client
 
+// pin to current location 
+var longitude, latitude;
+var getLocation = function (location) {
+  longitude = location.coords.latitude;
+  latitude = location.coords.longitude;
+};
+navigator.geolocation.getCurrentPosition(getLocation);
+
+Template.page.events({
+  'click .current-location': function (event, template) {
+       event.preventDefault();
+       map.setCenter(new google.maps.LatLng( longitude, latitude ));
+       map.setZoom(16);
+       openCreateDialog(longitude, latitude);
+   }
+});
+// @krazyeom Apr/19/2014
+
 Meteor.subscribe("directory");
 Meteor.subscribe("parties",function(){
 
@@ -32,6 +50,8 @@ Meteor.subscribe("parties",function(){
   });
 
 });
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Party details sidebar
