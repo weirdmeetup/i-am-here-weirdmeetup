@@ -211,6 +211,9 @@ Template.createDialog.events({
         openInviteDialog();
       party._id = id;
       Template.map.rendered(party);
+      jQuery('#createDialog').modal('hide');
+      jQuery('body').removeClass('modal-open');
+      jQuery('.modal-backdrop').remove();
       Session.set("showCreateDialog", false);
     } else {
       Session.set("createError",
@@ -221,6 +224,8 @@ Template.createDialog.events({
   'click .cancel': function () {
     Session.set("showCreateDialog", false);
     jQuery('#createDialog').modal('hide');
+    jQuery('body').removeClass('modal-open');
+    jQuery('.modal-backdrop').remove();
   }
 });
 
@@ -233,6 +238,7 @@ Template.createDialog.error = function () {
 
 var openInviteDialog = function () {
   Session.set("showInviteDialog", true);
+  jQuery('#inviteDialog').modal('show');
 };
 
 Template.page.showInviteDialog = function () {
@@ -245,6 +251,9 @@ Template.inviteDialog.events({
   },
   'click .done': function (event, template) {
     Session.set("showInviteDialog", false);
+    jQuery('#inviteDialog').modal('hide');
+    jQuery('body').removeClass('modal-open');
+    jQuery('.modal-backdrop').remove();
     return false;
   }
 });

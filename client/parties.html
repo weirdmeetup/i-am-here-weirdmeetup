@@ -148,19 +148,19 @@
     {{/unless}}
 
     {{#if nobody}}
-      <div>Nobody.</div>
+      <div>아직 아무도 없어요... 설마?</div>
     {{/if}}
 
     {{#if canInvite}}
-      <div class="invite">
-        <a href="#" class="btn btn-mini invite">사람들을 초대하자 으하하</a>
+      <div class="invite" style="padding-top:15px;">
+        <button type="button" class="btn btn-sm btn-primary invite">사람들을 초대하자 으하하</button>
       </div>
     {{/if}}
   </div>
 </template>
 
 <template name="createDialog">
-  <div class="modal fade" id="createDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal fade" id="createDialog" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog">
   <div class="modal-content">
 
@@ -171,19 +171,23 @@
 
     <div class="modal-body">
       {{#if error}}
-        <div class="alert alert-error">{{error}}</div>
+        <div class="bg-warning" style="padding: 5px;">{{error}}</div>
       {{/if}}
-
-      <label>모임명</label>
-      <input type="text" class="title span5">
-
-      <label>모임 설명 및 장소</label>
-      <textarea class="description span5"></textarea>
-
-      <label class="checkbox">
-        <input type="checkbox" class="private">
-        비공개 모임 (초대한 사람만 참가)
-      </label>
+      <form role="form">
+        <div class="form-group">
+          <label for="partyname">모임명</label>
+          <input type="email" class="form-control title" id="partyname" placeholder="모임 명칭을 적어주세요">
+        </div>
+        <div class="form-group">
+          <label for="description">모임 설명 및 장소</label>
+          <textarea class="description form-control" id="description" rows="3"></textarea>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" class="private"> 비공개 모임 (초대한 사람만 참가)
+          </label>
+        </div>
+      </form>
     </div>
 
     <div class="modal-footer">
@@ -196,17 +200,19 @@
 </template>
 
 <template name="inviteDialog">
-  <div class="mask"> </div>
-  <div class="modal">
+  <div class="modal fade" id="inviteDialog" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+
     <div class="modal-header">
-      <button type="button" class="close done">&times;</button>
-      <h3>참석자 초대하기</h3>
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title">참석자 초대하기</h4>
     </div>
 
     <div class="modal-body">
       {{#each uninvited}}
         <div class="invite-row">
-          <a href="#" class="btn invite">초대하기</a>
+          <a href="#" class="btn btn-default btn-sm invite">초대하기</a>
           {{displayName}}
         </div>
       {{else}}
@@ -217,6 +223,8 @@
     <div class="modal-footer">
       <a href="#" class="btn btn-primary done">완료</a>
     </div>
+  </div>
+  </div>
   </div>
 </template>
 
