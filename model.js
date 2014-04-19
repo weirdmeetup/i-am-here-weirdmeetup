@@ -34,7 +34,7 @@ Parties.allow({
   },
   remove: function (userId, party) {
     // You can only remove parties that you created and nobody is going to.
-    return party.owner === userId && attending(party) === 0;
+    return party.owner === userId;
   }
 });
 
