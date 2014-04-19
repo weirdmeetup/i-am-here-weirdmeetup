@@ -268,4 +268,9 @@ Template.inviteDialog.displayName = function () {
   return displayName(this);
 };
 
+Template.page.helpers({
+  currenturl: function(){
+    return document.URL;
+  }
+});
 
