@@ -162,6 +162,7 @@ var openCreateDialog = function (x, y) {
   Session.set("createCoords", {x: x, y: y});
   Session.set("createError", null);
   Session.set("showCreateDialog", true);
+  jQuery('#createDialog').modal('show');
 };
 
 Template.page.showCreateDialog = function () {
@@ -199,6 +200,7 @@ Template.createDialog.events({
 
   'click .cancel': function () {
     Session.set("showCreateDialog", false);
+    jQuery('#createDialog').modal('hide');
   }
 });
 
