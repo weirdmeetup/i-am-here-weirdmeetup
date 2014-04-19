@@ -16,18 +16,32 @@
     {{> inviteDialog}}
   {{/if}}
 
-  <div class="container">
-    <div class="header row">
-      <div class="col-md-6 col-xs-6">
-        <h3 style="margin-bottom: 0px">I'm here <a
-        href="http://we.weirdmeetup.com/" target="_blank">#이상한모임</a></h3>
-        <div><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></div>
-      </div>
-      <div class="col-md-6 col-xs-6 pull-right account-section">
-        {{> loginButtons align="right"}}
-      </div>
-    </div>
 
+  <!-- Static navbar -->
+  <div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">I'm here #이상한모임</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></li>
+        </ul>
+        <div class="nav navbar-nav navbar-right">
+          {{> loginButtons align="right"}}
+        </div>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+
+  <div class="container">
     <div class="row">
       <div class="col-md-6">
         {{> map}}
