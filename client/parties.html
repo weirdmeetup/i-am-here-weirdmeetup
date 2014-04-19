@@ -4,8 +4,8 @@
 </head>
 
 <body>
-  {{> page}}
-</body>
+<!--   {{> page}}
+ --></body>
 
 <template name="page">
   {{#if showCreateDialog}}
@@ -42,8 +42,9 @@
               <em><small>지도를 더블클릭하면 이상한 모임을 시작할 수 있습니당!</small></em>
               <br>
               <a href="#" class="current-location btn">현재 위치로 이상한 모임 시작하기</a>
-            </div>
-            {{/if}}
+              </div>
+              
+            {{/if}}       
           </div>
           <div class="span4">
             {{> details}}
@@ -211,4 +212,3 @@
     </div>
   </div>
 </template>
-

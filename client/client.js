@@ -20,7 +20,6 @@ Template.page.events({
 
 Meteor.subscribe("directory");
 Meteor.subscribe("parties",function(){
-
   // If no party selected, or if the selected party was deleted, select one.
   Meteor.startup(function () {
     GoogleMaps.init(
@@ -34,10 +33,12 @@ Meteor.subscribe("parties",function(){
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions); 
-        map.setCenter(new google.maps.LatLng( 37.566535, 126.977969 ));
-        map.set("disableDoubleClickZoom", true);
+        if (longitude === undefined) longitude = 37.566535;
+        if (latitude === undefined) latitude =126.977969;
 
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions); 
+        map.setCenter(new google.maps.LatLng( longitude, latitude ));
+        map.set("disableDoubleClickZoom", true);
         google.maps.event.addListener(map, "dblclick", function(e){
           if(! Meteor.userId())
             return;
@@ -165,7 +166,9 @@ Template.map.rendered = function(party){
   });
 
   google.maps.event.addListener(marker, "click", function(e){
-    Session.set("selected", marker.title);
+    var tempLocation = "/meetups/" + marker.title
+    window.location.replace(tempLocation);
+    // Session.set("selected", marker.title);
   });
   if(!google.markers) google.markers = [];
   google.markers[party._id] = marker;
@@ -174,6 +177,12 @@ Template.map.rendered = function(party){
 Template.map.destroyed = function (marker) {
   marker.setMap(null);
 };
+
+Template.map.selectParty = function(_PartyId, x, y){
+    Session.set("selected", _PartyId);
+    longitude = x;
+    latitude = y;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create Party dialog
@@ -258,3 +267,5 @@ Template.inviteDialog.uninvited = function () {
 Template.inviteDialog.displayName = function () {
   return displayName(this);
 };
+
+
