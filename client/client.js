@@ -5,8 +5,6 @@ var currentLongitude, currentLatitude, longitude, latitude;
 var getLocation = function (location) {
   currentLatitude = location.coords.latitude;
   currentLongitude = location.coords.longitude;
-
-  console.log( 'getLocation(): lon:' + longitude + ', lat:' + latitude);
 };
 navigator.geolocation.getCurrentPosition(getLocation);
 
@@ -67,7 +65,7 @@ Meteor.subscribe("parties",function(){
 
         if (longitude === undefined || latitude === undefined){
           longitude = 37.566535;
-          latitude =126.977969;
+          latitude = 126.977969;
         } 
 
         map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions); 
@@ -76,7 +74,7 @@ Meteor.subscribe("parties",function(){
         google.maps.event.addListener(map, "dblclick", function(e){
           if(! Meteor.userId())
             return;
-          openCreateDialog(longitude, latitude);
+          openCreateDialog(e.latLng.k,e.latLng.A);
         });
 
         Parties.find().fetch().forEach(Template.map.rendered);
@@ -213,7 +211,6 @@ Template.map.destroyed = function (marker) {
 Template.map.selectParty = function(_PartyId, _x, _y){
     longitude = _x;
     latitude = _y;
-    console.log("debug selectParty:" + longitude + " " + latitude + " " + _x  + " " + _y);
     Session.set("selected", _PartyId);
 }
 
