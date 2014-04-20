@@ -8,9 +8,8 @@
 </body>
 
 <template name="page">
-  {{#if showCreateDialog}}
+  <!-- Dialog for creation should be ready regardless of it's visibility -->
     {{> createDialog}}
-  {{/if}}
 
   {{#if showInviteDialog}}
     {{> inviteDialog}}
@@ -100,6 +99,10 @@
               <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
           </small></div>
         {{/if}}
+        <div>
+          <i> TODO: Can we have comments here? </i>
+        </div>
+
       {{/with}}
     {{else}}
       <h1 class="text-info text-center">
@@ -191,7 +194,7 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-default cancel" data-dismiss="modal">취소</button>
         <button type="button" class="btn btn-primary save">모임 만들기</button>
     </div>
   </div>
