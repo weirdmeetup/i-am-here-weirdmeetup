@@ -5,6 +5,8 @@ var currentLongitude, currentLatitude, longitude, latitude;
 var getLocation = function (location) {
   currentLatitude = location.coords.latitude;
   currentLongitude = location.coords.longitude;
+
+  console.log( 'getLocation(): lon:' + longitude + ', lat:' + latitude);
 };
 navigator.geolocation.getCurrentPosition(getLocation);
 
@@ -12,9 +14,39 @@ Template.page.events({
   'click .current-location': function (event, template) {
        event.preventDefault();
        openCreateDialog(currentLatitude, currentLongitude);
-       map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
-       map.setZoom(16);
-   }
+
+      if ( !longitude || !latitude ) {
+          /* TODO: Alert with error: Current location not available */
+          /* try location query once more for the next approach */
+          navigator.geolocation.getCurrentPosition(getLocation);
+          return;
+      }
+
+      if ( !Meteor.userId() ) {
+        /* TODO: Alert with error: need to be logged in */
+          return;
+      }
+
+      map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
+      map.setZoom(16);
+   },
+   'click .move-current-location': function (event, template) {
+     event.preventDefault();
+    if ( !longitude || !latitude ) {
+        /* TODO: Alert with error: Current location not available */
+        /* try location query once more for the next approach */
+        navigator.geolocation.getCurrentPosition(getLocation);
+        return;
+    }
+
+    if ( !Meteor.userId() ) {
+      /* TODO: Alert with error: need to be logged in */
+        return;
+    }
+
+    map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
+    map.setZoom(16);
+ }
 });
 // @krazyeom Apr/19/2014
 
@@ -44,8 +76,9 @@ Meteor.subscribe("parties",function(){
         google.maps.event.addListener(map, "dblclick", function(e){
           if(! Meteor.userId())
             return;
+          openCreateDialog(longitude, latitude);
         });
-        openCreateDialog(longitude, latitude);
+
         Parties.find().fetch().forEach(Template.map.rendered);
       }
     );
@@ -166,7 +199,8 @@ Template.map.rendered = function(party){
 
   google.maps.event.addListener(marker, "click", function(e){
     var tempLocation = "/meetups/" +  marker.title + "," +marker.position.k + "," + marker.position.A;
-    window.location.replace(tempLocation);
+    window.history.pushState(null, null, tempLocation);
+    Session.set("selected", marker.title);
   });
   if(!google.markers) google.markers = [];
   google.markers[party._id] = marker;
@@ -190,10 +224,11 @@ var openCreateDialog = function (x, y) {
   Session.set("createCoords", {x: x, y: y});
   Session.set("createError", null);
   Session.set("showCreateDialog", true);
-  jQuery('#createDialog').modal('show');
 };
 
 Template.page.showCreateDialog = function () {
+  if(Session.get("showCreateDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
   return Session.get("showCreateDialog");
 };
 
@@ -203,6 +238,11 @@ Template.createDialog.events({
     var description = template.find(".description").value;
     var public = ! template.find(".private").checked;
     var coords = Session.get("createCoords");
+
+    if ( !Meteor.userId() ) {
+      Session.set("createError", "You need to be logged in");
+      return;
+    }
 
     if (title.length && description.length) {
       var party = {
@@ -247,6 +287,8 @@ var openInviteDialog = function () {
 };
 
 Template.page.showInviteDialog = function () {
+  if(Session.get("showInviteDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
   return Session.get("showInviteDialog");
 };
 
