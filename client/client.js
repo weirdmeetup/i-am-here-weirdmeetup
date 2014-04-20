@@ -1,18 +1,16 @@
 // All Tomorrow's Parties -- client
-
 // pin to current location 
-var longitude, latitude;
+var currentLongitude, currentLatitude, longitude, latitude;
 var getLocation = function (location) {
-  longitude = location.coords.latitude;
-  latitude = location.coords.longitude;
-
-  console.log( 'getLocation(): lon:' + longitude + ', lat:' + latitude);
+  currentLatitude = location.coords.latitude;
+  currentLongitude = location.coords.longitude;
 };
 navigator.geolocation.getCurrentPosition(getLocation);
 
 Template.page.events({
   'click .current-location': function (event, template) {
        event.preventDefault();
+       openCreateDialog(currentLatitude, currentLongitude);
 
       if ( !longitude || !latitude ) {
           /* TODO: Alert with error: Current location not available */
@@ -26,17 +24,34 @@ Template.page.events({
           return;
       }
 
-       map.setCenter(new google.maps.LatLng( longitude, latitude ));
-       map.setZoom(16);
-       openCreateDialog(longitude, latitude);
-   }
+      map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
+      map.setZoom(16);
+   },
+   'click .move-current-location': function (event, template) {
+     event.preventDefault();
+    if ( !longitude || !latitude ) {
+        /* TODO: Alert with error: Current location not available */
+        /* try location query once more for the next approach */
+        navigator.geolocation.getCurrentPosition(getLocation);
+        return;
+    }
+
+    if ( !Meteor.userId() ) {
+      /* TODO: Alert with error: need to be logged in */
+        return;
+    }
+
+    map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
+    map.setZoom(16);
+ }
 });
 // @krazyeom Apr/19/2014
 
 Meteor.subscribe("directory");
 Meteor.subscribe("parties",function(){
-
   // If no party selected, or if the selected party was deleted, select one.
+  // !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
   Meteor.startup(function () {
     GoogleMaps.init(
       {
@@ -49,10 +64,14 @@ Meteor.subscribe("parties",function(){
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions); 
-        map.setCenter(new google.maps.LatLng( 37.566535, 126.977969 ));
-        map.set("disableDoubleClickZoom", true);
+        if (longitude === undefined || latitude === undefined){
+          longitude = 37.566535;
+          latitude = 126.977969;
+        } 
 
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions); 
+        map.setCenter(new google.maps.LatLng( longitude, latitude ));
+        map.set("disableDoubleClickZoom", true);
         google.maps.event.addListener(map, "dblclick", function(e){
           if(! Meteor.userId())
             return;
@@ -65,8 +84,6 @@ Meteor.subscribe("parties",function(){
   });
 
 });
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Party details sidebar
@@ -100,6 +117,10 @@ Template.details.maybeChosen = function (what) {
   }) || {};
 
   return what == myRsvp.rsvp ? "chosen btn-inverse" : "";
+};
+
+Template.details.text = function () {
+  return document.URL;
 };
 
 Template.details.events({
@@ -180,6 +201,8 @@ Template.map.rendered = function(party){
   });
 
   google.maps.event.addListener(marker, "click", function(e){
+    var tempLocation = "/meetups/" +  marker.title + "," +marker.position.k + "," + marker.position.A;
+    window.history.pushState(null, null, tempLocation);
     Session.set("selected", marker.title);
   });
   if(!google.markers) google.markers = [];
@@ -189,6 +212,12 @@ Template.map.rendered = function(party){
 Template.map.destroyed = function (marker) {
   marker.setMap(null);
 };
+
+Template.map.selectParty = function(_PartyId, _x, _y){
+    longitude = _x;
+    latitude = _y;
+    Session.set("selected", _PartyId);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create Party dialog
@@ -245,6 +274,8 @@ Template.createDialog.events({
 });
 
 Template.createDialog.error = function () {
+  if(Session.get("showCreateDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
   return Session.get("createError");
 };
 
@@ -252,6 +283,8 @@ Template.createDialog.error = function () {
 // Invite dialog
 
 var openInviteDialog = function () {
+  if(Session.get("showInviteDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
   Session.set("showInviteDialog", true);
 };
 
@@ -282,3 +315,10 @@ Template.inviteDialog.uninvited = function () {
 Template.inviteDialog.displayName = function () {
   return displayName(this);
 };
+
+Template.page.helpers({
+  currenturl: function(){
+    return document.URL;
+  }
+});
+

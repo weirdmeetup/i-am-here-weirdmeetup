@@ -4,7 +4,7 @@
 </head>
 
 <body>
-  {{> page}}
+  <!-- {{> page}} -->
 </body>
 
 <template name="page">
@@ -27,10 +27,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">I'm here #이상한모임</a>
+       <a class="navbar-brand" href="{{pathFor 'page'}}">I'm here #이상한모임</a>
       </div>
       <div class="navbar-collapse collapse">
         <a href="#" class="current-location btn btn-primary btn-sm navbar-btn">현재 위치로 이상한모임 시작하기</a>
+        <a href="#" class="move-current-location btn btn-primary btn-sm navbar-btn">내 위치로 가기</a>
         <ul class="nav navbar-nav">
           <li><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></li>
         </ul>
@@ -40,8 +41,6 @@
       </div><!--/.nav-collapse -->
     </div>
   </div>
-
-
 
   <div class="container">
     <div class="row">
@@ -69,7 +68,8 @@
     {{#if party}}
       {{#with party}}
         <h1>{{title}}</h1>
-
+        #이상한모임 공유하기
+        <a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="twitter-share-button" target="_blank">Tweet</a>
         <div class="description">{{description}}</div>
 
         {{> attendance}}
@@ -233,4 +233,3 @@
   </div>
   <div class="modal-backdrop fade in"></div>
 </template>
-
