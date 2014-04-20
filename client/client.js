@@ -1,5 +1,4 @@
 // All Tomorrow's Parties -- client
-
 // pin to current location 
 var currentLongitude, currentLatitude, longitude, latitude;
 var getLocation = function (location) {
@@ -51,6 +50,8 @@ Template.page.events({
 Meteor.subscribe("directory");
 Meteor.subscribe("parties",function(){
   // If no party selected, or if the selected party was deleted, select one.
+  // !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
   Meteor.startup(function () {
     GoogleMaps.init(
       {
@@ -116,6 +117,10 @@ Template.details.maybeChosen = function (what) {
   }) || {};
 
   return what == myRsvp.rsvp ? "chosen btn-inverse" : "";
+};
+
+Template.details.text = function () {
+  return document.URL;
 };
 
 Template.details.events({
