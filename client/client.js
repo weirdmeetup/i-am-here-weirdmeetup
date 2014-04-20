@@ -182,10 +182,11 @@ var openCreateDialog = function (x, y) {
   Session.set("createCoords", {x: x, y: y});
   Session.set("createError", null);
   Session.set("showCreateDialog", true);
-  jQuery('#createDialog').modal('show');
 };
 
 Template.page.showCreateDialog = function () {
+  if(Session.get("showCreateDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
   return Session.get("showCreateDialog");
 };
 
@@ -211,9 +212,6 @@ Template.createDialog.events({
         openInviteDialog();
       party._id = id;
       Template.map.rendered(party);
-      jQuery('#createDialog').modal('hide');
-      jQuery('body').removeClass('modal-open');
-      jQuery('.modal-backdrop').remove();
       Session.set("showCreateDialog", false);
     } else {
       Session.set("createError",
@@ -223,9 +221,6 @@ Template.createDialog.events({
 
   'click .cancel': function () {
     Session.set("showCreateDialog", false);
-    jQuery('#createDialog').modal('hide');
-    jQuery('body').removeClass('modal-open');
-    jQuery('.modal-backdrop').remove();
   }
 });
 
@@ -238,10 +233,11 @@ Template.createDialog.error = function () {
 
 var openInviteDialog = function () {
   Session.set("showInviteDialog", true);
-  jQuery('#inviteDialog').modal('show');
 };
 
 Template.page.showInviteDialog = function () {
+  if(Session.get("showInviteDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
   return Session.get("showInviteDialog");
 };
 
@@ -251,9 +247,6 @@ Template.inviteDialog.events({
   },
   'click .done': function (event, template) {
     Session.set("showInviteDialog", false);
-    jQuery('#inviteDialog').modal('hide');
-    jQuery('body').removeClass('modal-open');
-    jQuery('.modal-backdrop').remove();
     return false;
   }
 });
