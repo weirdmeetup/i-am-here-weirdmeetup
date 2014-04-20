@@ -5,12 +5,27 @@ var longitude, latitude;
 var getLocation = function (location) {
   longitude = location.coords.latitude;
   latitude = location.coords.longitude;
+
+  console.log( 'getLocation(): lon:' + longitude + ', lat:' + latitude);
 };
 navigator.geolocation.getCurrentPosition(getLocation);
 
 Template.page.events({
   'click .current-location': function (event, template) {
        event.preventDefault();
+
+      if ( !longitude || !latitude ) {
+          /* TODO: Alert with error: Current location not available */
+          /* try location query once more for the next approach */
+          navigator.geolocation.getCurrentPosition(getLocation);
+          return;
+      }
+
+      if ( !Meteor.userId() ) {
+        /* TODO: Alert with error: need to be logged in */
+          return;
+      }
+
        map.setCenter(new google.maps.LatLng( longitude, latitude ));
        map.setZoom(16);
        openCreateDialog(longitude, latitude);
@@ -181,12 +196,7 @@ Template.map.destroyed = function (marker) {
 var openCreateDialog = function (x, y) {
   Session.set("createCoords", {x: x, y: y});
   Session.set("createError", null);
-  Session.set("showCreateDialog", true);
   jQuery('#createDialog').modal('show');
-};
-
-Template.page.showCreateDialog = function () {
-  return Session.get("showCreateDialog");
 };
 
 Template.createDialog.events({
@@ -195,6 +205,11 @@ Template.createDialog.events({
     var description = template.find(".description").value;
     var public = ! template.find(".private").checked;
     var coords = Session.get("createCoords");
+
+    if ( !Meteor.userId() ) {
+      Session.set("createError", "You need to be logged in");
+      return;
+    }
 
     if (title.length && description.length) {
       var party = {
@@ -214,7 +229,8 @@ Template.createDialog.events({
       jQuery('#createDialog').modal('hide');
       jQuery('body').removeClass('modal-open');
       jQuery('.modal-backdrop').remove();
-      Session.set("showCreateDialog", false);
+      jQuery('#partyname').val('');
+      jQuery('#description').val('');
     } else {
       Session.set("createError",
                   "It needs a title and a description, or why bother?");
@@ -222,7 +238,10 @@ Template.createDialog.events({
   },
 
   'click .cancel': function () {
-    Session.set("showCreateDialog", false);
+    /* clear input entries for the next time input fresh */
+    jQuery('#partyname').val('');
+    jQuery('#description').val('');
+
     jQuery('#createDialog').modal('hide');
     jQuery('body').removeClass('modal-open');
     jQuery('.modal-backdrop').remove();
