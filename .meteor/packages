@@ -11,6 +11,8 @@ accounts-facebook
 accounts-twitter
 audit-argument-checks
 googlemaps
-bootstrap-3
+iron-router
 jquery
+bootstrap-3
 accounts-ui-bootstrap-3-blaze
+accounts-github
