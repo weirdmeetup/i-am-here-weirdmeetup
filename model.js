@@ -162,7 +162,32 @@ Meteor.methods({
       Parties.update(partyId,
                      {$push: {rsvps: {user: this.userId, rsvp: rsvp}}});
     }
+  },
+
+  addComment: function (options) {
+    check(options, {
+      body: NonEmptyString,
+      partyId: NonEmptyString,
+      _id: Match.Optional(NonEmptyString)
+    });
+
+    var user = Meteor.user();
+
+    if ( !user )
+      throw new Meteor.Error(403, "You must be logged in");
+
+    var id = options._id || Random.id();
+    Comments.insert({
+      _id: id,
+      authorId: user._id,
+      author: displayName(user),
+      body: options.body,
+      partyId: options.partyId,
+      submitted: new Date().getTime()
+    });
+    return id;
   }
+
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -180,4 +205,15 @@ var contactEmail = function (user) {
   if (user.services && user.services.facebook && user.services.facebook.email)
     return user.services.facebook.email;
   return null;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// Comments
+
+Comments = new Meteor.Collection('comments');
+
+addComment = function (options) {
+  var id = Random.id();
+  Meteor.call('addComment', _.extend({ _id: id }, options));
+  return id;
 };
