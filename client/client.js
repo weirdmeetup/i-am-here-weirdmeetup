@@ -1,51 +1,4 @@
 // All Tomorrow's Parties -- client
-// pin to current location 
-var currentLongitude, currentLatitude, longitude, latitude;
-var getLocation = function (location) {
-  currentLatitude = location.coords.latitude;
-  currentLongitude = location.coords.longitude;
-};
-navigator.geolocation.getCurrentPosition(getLocation);
-
-Template.page.events({
-  'click .current-location': function (event, template) {
-       event.preventDefault();
-       openCreateDialog(currentLatitude, currentLongitude);
-
-      if ( !longitude || !latitude ) {
-          /* TODO: Alert with error: Current location not available */
-          /* try location query once more for the next approach */
-          navigator.geolocation.getCurrentPosition(getLocation);
-          return;
-      }
-
-      if ( !Meteor.userId() ) {
-        /* TODO: Alert with error: need to be logged in */
-          return;
-      }
-
-      map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
-      map.setZoom(16);
-   },
-   'click .move-current-location': function (event, template) {
-     event.preventDefault();
-    if ( !longitude || !latitude ) {
-        /* TODO: Alert with error: Current location not available */
-        /* try location query once more for the next approach */
-        navigator.geolocation.getCurrentPosition(getLocation);
-        return;
-    }
-
-    if ( !Meteor.userId() ) {
-      /* TODO: Alert with error: need to be logged in */
-        return;
-    }
-
-    map.setCenter(new google.maps.LatLng( currentLatitude, currentLongitude ));
-    map.setZoom(16);
- }
-});
-// @krazyeom Apr/19/2014
 
 Meteor.subscribe("directory");
 Meteor.subscribe("parties",function(){
@@ -64,14 +17,15 @@ Meteor.subscribe("parties",function(){
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        if (longitude === undefined || latitude === undefined){
-          longitude = 37.566535;
-          latitude = 126.977969;
-        } 
+        // set init position
+        var latitude = 37.566535;
+        var longitude = 126.977969;
 
-        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions); 
-        map.setCenter(new google.maps.LatLng( longitude, latitude ));
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+        map.setCenter(new google.maps.LatLng( latitude, longitude ));
         map.set("disableDoubleClickZoom", true);
+
         google.maps.event.addListener(map, "dblclick", function(e){
           if(! Meteor.userId())
             return;
@@ -81,8 +35,71 @@ Meteor.subscribe("parties",function(){
         Parties.find().fetch().forEach(Template.map.rendered);
       }
     );
-  });
 
+    // if api load current position, the map will update the location
+    navigator.geolocation.getCurrentPosition(initCurrentLocation);
+  });
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// Current Location
+
+var setCurrentCoords = function(location){
+  var currentLatitude  = location.coords.latitude;
+  var currentLongitude = location.coords.longitude;
+  Session.set("currentCoords", {x: currentLatitude, y: currentLongitude});
+};
+
+var setMapToCurrentCoords = function(zoom){
+  if(typeof zoom == 'undefined') zoom = 16;
+  var coords = Session.get("currentCoords");
+  map.setCenter(new google.maps.LatLng( coords.x, coords.y ));
+  map.setZoom(zoom);
+};
+
+var openCreateCurrentCoordsDialog = function(){
+  var coords = Session.get("currentCoords");
+  openCreateDialog(coords.x, coords.y);
+};
+
+var clickedCurrentLocation = function(location){
+  setCurrentCoords(location);
+  setMapToCurrentCoords();
+  openCreateCurrentCoordsDialog();
+};
+
+var clickedMoveCurrentLocation = function(location){
+  setCurrentCoords(location);
+  setMapToCurrentCoords();
+};
+
+var initCurrentLocation = function(location){
+  setCurrentCoords(location);
+  setMapToCurrentCoords(11);
+};
+
+Template.page.events({
+  'click .current-location': function (event, template) {
+    event.preventDefault();
+
+    if ( !Meteor.userId() ) {
+      /* TODO: Alert with error: need to be logged in */
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(clickedCurrentLocation, openDisallowedDialog);
+
+  },
+  'click .move-current-location': function (event, template) {
+    event.preventDefault();
+
+    if ( !Meteor.userId() ) {
+      /* TODO: Alert with error: need to be logged in */
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(clickedMoveCurrentLocation, openDisallowedDialog);
+  }
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -322,3 +339,25 @@ Template.page.helpers({
   }
 });
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Location API Disallowed dialog
+
+var openDisallowedDialog = function () {
+  if(Session.get("showDisallowedDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
+  Session.set("showDisallowedDialog", true);
+};
+
+Template.page.showDisallowedDialog = function () {
+  if(Session.get("showDisallowedDialog")) jQuery("body").addClass("modal-open");
+  else jQuery("body").removeClass("modal-open");
+  return Session.get("showDisallowedDialog");
+};
+
+Template.disallowedDialog.events({
+  'click .cancel': function (event, template) {
+    Session.set("showDisallowedDialog", false);
+    return false;
+  }
+});

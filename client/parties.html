@@ -16,6 +16,10 @@
     {{> inviteDialog}}
   {{/if}}
 
+  {{#if showDisallowedDialog}}
+    {{> disallowedDialog}}
+  {{/if}}
+
 
   <!-- Static navbar -->
   <div class="navbar navbar-default navbar-static-top" role="navigation">
@@ -227,6 +231,29 @@
 
     <div class="modal-footer">
       <a href="#" class="btn btn-primary done">완료</a>
+    </div>
+  </div>
+  </div>
+  </div>
+  <div class="modal-backdrop fade in"></div>
+</template>
+
+<template name="disallowedDialog">
+  <div class="modal show" id="disallowedDialog" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <button type="button" class="close cancel" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title">위치 정보 API 허용</h4>
+    </div>
+
+    <div class="modal-body">
+      <p>이 기능은 브라우저의 위치정보 API 사용을 허용해야 사용할 수 있습니다.</p>
+    </div>
+
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary done cancel">닫기</a>
     </div>
   </div>
   </div>
