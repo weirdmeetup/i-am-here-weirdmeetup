@@ -40,6 +40,7 @@ Meteor.subscribe("parties",function(){
     navigator.geolocation.getCurrentPosition(initCurrentLocation);
   });
 });
+Meteor.subscribe("comments");
 
 ///////////////////////////////////////////////////////////////////////////////
 // Current Location
@@ -361,3 +362,74 @@ Template.disallowedDialog.events({
     return false;
   }
 });
+
+
+////////////////////////////////////////////////
+/// Comments
+
+var showCommentError = function(message) {
+  /* Error message to display in commentform template */
+  // console.log( 'error:comment: ' + message)
+  Session.set( 'errorComment', message);
+};
+
+var clearCommentError = function() {
+  /* clear commentform error message */
+  showCommentError(null);
+};
+
+Template.comments.helpers ( {
+  comments: function() {
+    /* retrieve comments for the party */
+    return Comments.find( {partyId: this._id} );
+  }
+});
+
+Template.comments.events ({
+  'click .comment': function (event, template) {
+    /* User clicks 'comment' button and we verify input and relation to party before adding to the collection: comments */
+
+    /* requirement: user logged in, comment body is not empty, partyId valid */
+    if ( !Meteor.userId() ) {
+      showCommentError( 'BUG: User not logged in');
+      return;
+    }
+
+    var body = template.find(".comment-body").value;
+    var partyId = this._id;
+    if ( !body.length) {
+      showCommentError('Entered comment is empty');
+      return;
+    }
+
+    if ( !partyId.length ) {
+      showCommentError('BUG: Commenting to an unknown party');
+      return;
+    }
+
+    var commentEntry = {
+        body: body,
+        partyId: partyId
+    };
+
+    // console.log( 'Adding comment: body:' + body + ',partyId:' + partyId);
+    addComment(commentEntry);
+
+    /* clear the form & error message */
+    template.find(".comment-body").value = '';
+    clearCommentError();
+  }
+});
+
+
+Template.comment.helpers ( {
+  submittedText: function() {
+    /* convert 'submitted' field to readable text */
+    return new Date(this.submitted).toLocaleString();
+  }
+});
+
+Template.commentform.error = function () {
+  /* present error message in the browser whenever this session key value is changed */
+  return Session.get('errorComment');
+};
