@@ -32,12 +32,16 @@ Meteor.subscribe("parties",function(){
           openCreateDialog(e.latLng.k,e.latLng.A);
         });
 
+        if(Session.get("onAfterAction")){
+          Template.location.setMapToCurrentCoords();
+        }else{
+          // if api load current position, the map will update the location
+          navigator.geolocation.getCurrentPosition(Template.location.initCurrentLocation);
+        }
+
         Parties.find().fetch().forEach(Template.map.rendered);
       }
     );
-
-    // if api load current position, the map will update the location
-    navigator.geolocation.getCurrentPosition(initCurrentLocation);
   });
 });
 Meteor.subscribe("comments");
@@ -45,38 +49,38 @@ Meteor.subscribe("comments");
 ///////////////////////////////////////////////////////////////////////////////
 // Current Location
 
-var setCurrentCoords = function(location){
+Template.location.setCurrentCoords = function(location){
   var currentLatitude  = location.coords.latitude;
   var currentLongitude = location.coords.longitude;
   Session.set("currentCoords", {x: currentLatitude, y: currentLongitude});
 };
 
-var setMapToCurrentCoords = function(zoom){
+Template.location.setMapToCurrentCoords = function(zoom){
   if(typeof zoom == 'undefined') zoom = 16;
   var coords = Session.get("currentCoords");
   map.setCenter(new google.maps.LatLng( coords.x, coords.y ));
   map.setZoom(zoom);
 };
 
-var openCreateCurrentCoordsDialog = function(){
+Template.location.openCreateCurrentCoordsDialog = function(){
   var coords = Session.get("currentCoords");
   openCreateDialog(coords.x, coords.y);
 };
 
-var clickedCurrentLocation = function(location){
-  setCurrentCoords(location);
-  setMapToCurrentCoords();
-  openCreateCurrentCoordsDialog();
+Template.location.clickedCurrentLocation = function(location){
+  Template.location.setCurrentCoords(location);
+  Template.location.setMapToCurrentCoords();
+  Template.location.openCreateCurrentCoordsDialog();
 };
 
-var clickedMoveCurrentLocation = function(location){
-  setCurrentCoords(location);
-  setMapToCurrentCoords();
+Template.location.clickedMoveCurrentLocation = function(location){
+  Template.location.setCurrentCoords(location);
+  Template.location.setMapToCurrentCoords();
 };
 
-var initCurrentLocation = function(location){
-  setCurrentCoords(location);
-  setMapToCurrentCoords(11);
+Template.location.initCurrentLocation = function(location){
+  Template.location.setCurrentCoords(location);
+  Template.location.setMapToCurrentCoords(11);
 };
 
 Template.page.events({
@@ -88,7 +92,7 @@ Template.page.events({
         return;
     }
 
-    navigator.geolocation.getCurrentPosition(clickedCurrentLocation, openDisallowedDialog);
+    navigator.geolocation.getCurrentPosition(Template.location.clickedCurrentLocation, openDisallowedDialog);
 
   },
   'click .move-current-location': function (event, template) {
@@ -99,7 +103,7 @@ Template.page.events({
         return;
     }
 
-    navigator.geolocation.getCurrentPosition(clickedMoveCurrentLocation, openDisallowedDialog);
+    navigator.geolocation.getCurrentPosition(Template.location.clickedMoveCurrentLocation, openDisallowedDialog);
   }
 });
 

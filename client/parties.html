@@ -8,6 +8,9 @@
 </body>
 
 <template name="page">
+
+  {{> location}}
+
   {{#if showCreateDialog}}
     {{> createDialog}}
   {{/if}}
@@ -66,7 +69,8 @@
 <template name="map">
   <div id="map-canvas"></div>
 </template>
-
+<template name="location">
+</template>
 <template name="details">
   <div class="details">
     {{#if party}}
