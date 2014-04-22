@@ -9,6 +9,14 @@ Meteor.publish("parties", function () {
     {$or: [{"public": true}, {invited: this.userId}, {owner: this.userId}]});
 });
 
+Meteor.publish("activeParties", function () {
+	var now = new Date().getTime();
+	return Parties.find(
+    		{expires: { $gt: now}},
+    		{$or: [{"public": true}, {invited: this.userId}, {owner: this.userId}]}
+	);
+});
+
 Meteor.publish("comments", function() {
 	return Comments.find();
 });
