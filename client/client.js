@@ -138,6 +138,7 @@ Template.details.events({
   },
   'click .remove': function () {
     Parties.remove(this._id);
+    window.history.pushState(null, null, '/');
     return false;
   }
 });
