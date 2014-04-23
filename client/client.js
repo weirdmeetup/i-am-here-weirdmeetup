@@ -115,8 +115,11 @@ Template.details.text = function () {
 };
 
 Template.details.dateTimeText = function(date) {
- 
   return date ? new Date(date).toLocaleString() : "Unknown";
+};
+
+Template.details.legibleDateTimeText = function(date) {
+  return date ? moment(date).fromNow() : "Unknown";
 }
 
 Template.details.events({
