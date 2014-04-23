@@ -77,6 +77,10 @@ Meteor.methods({
     if (! this.userId)
       throw new Meteor.Error(403, "You must be logged in");
 
+    var now = new Date().getTime();
+    var begins = options.expires || now;
+    var expires = options.expires || now + 2 * 3600 * 1000; /* 2 hours by default */
+
     var id = options._id || Random.id();
     Parties.insert({
       _id: id,
@@ -87,7 +91,10 @@ Meteor.methods({
       description: options.description,
       public: !! options.public,
       invited: [],
-      rsvps: []
+      rsvps: [],
+      created: now,
+      begins: begins,
+      expires: expires
     });
     return id;
   },
@@ -181,9 +188,9 @@ Meteor.methods({
       _id: id,
       authorId: user._id,
       author: displayName(user),
+      submitted: new Date().getTime(),
       body: options.body,
-      partyId: options.partyId,
-      submitted: new Date().getTime()
+      partyId: options.partyId
     });
     return id;
   }

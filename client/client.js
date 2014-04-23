@@ -1,11 +1,24 @@
 // All Tomorrow's Parties -- client
 
+var googleMapMarkers = [];
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+
 Meteor.subscribe("directory");
-Meteor.subscribe("parties",function(){
+Meteor.subscribe("activeParties",function(){
   // If no party selected, or if the selected party was deleted, select one.
   // !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 
   Meteor.startup(function () {
+    /* reloaded by Meteor. Restart with googleMapsReady not set */
+    Session.set("googleMapsReady", false);
     GoogleMaps.init(
       {
           'sensor': true, //optional
@@ -39,7 +52,7 @@ Meteor.subscribe("parties",function(){
           navigator.geolocation.getCurrentPosition(Template.location.initCurrentLocation);
         }
 
-        Parties.find().fetch().forEach(Template.map.rendered);
+        Session.set("googleMapsReady", true);
       }
     );
   });
@@ -145,6 +158,11 @@ Template.details.text = function () {
   return document.URL;
 };
 
+Template.details.dateTimeText = function(date) {
+ 
+  return date ? new Date(date).toLocaleString() : "Unknown";
+}
+
 Template.details.events({
   'click .rsvp_yes': function () {
     Meteor.call("rsvp", Session.get("selected"), "yes");
@@ -164,8 +182,7 @@ Template.details.events({
   },
   'click .remove': function () {
     Parties.remove(this._id);
-    var marker = google.markers[this._id];
-    Template.map.destroyed(marker);
+    mapRemoveParty(this);
     return false;
   }
 });
@@ -213,26 +230,99 @@ var coordsRelativeToElement = function (element, event) {
   return { x: x, y: y };
 };
 
-Template.map.rendered = function(party){
-  if(typeof google == 'undefined') return;
-  var marker = new google.maps.Marker({
-    position: new google.maps.LatLng(party.x, party.y),
-    map: map,
-    animation: google.maps.Animation.DROP,
-    title: party._id
-  });
 
-  google.maps.event.addListener(marker, "click", function(e){
-    var tempLocation = "/meetups/" +  marker.title + "," +marker.position.k + "," + marker.position.A;
-    window.history.pushState(null, null, tempLocation);
-    Session.set("selected", marker.title);
-  });
-  if(!google.markers) google.markers = [];
-  google.markers[party._id] = marker;
+var mapCreateMarkerForParty = function(party) {
+     var marker = new google.maps.Marker({
+       position: new google.maps.LatLng(party.x, party.y),
+       map: map,
+       animation: google.maps.Animation.DROP,
+       title: party.title,
+       partyId: party._id
+     });
+ 
+     google.maps.event.addListener(marker, "click", function(e){
+        var tempLocation = "/meetups/" +  marker.partyId + "," +marker.position.k + "," + marker.position.A;
+        window.history.pushState(null, null, tempLocation);
+        Session.set("selected", marker.partyId);
+     });
+
+     return marker;
 };
 
-Template.map.destroyed = function (marker) {
-  marker.setMap(null);
+var mapAddParty = function(party) {
+   if(typeof google == 'undefined') {
+     console.log( 'mapAddParty: google not ready');
+     return;
+   }
+ 
+   if ( !googleMapMarkers[party._id] ) {
+     googleMapMarkers[party._id] = mapCreateMarkerForParty(party);
+   }
+ };
+ 
+var mapUpdateParties = function(parties) {
+  var remain = [];
+ 
+  /* copy existing or add new to remain[]. those still left in googleMapMarkers[] will be removed */
+  parties.forEach(function(party) {
+       if ( googleMapMarkers[party._id]) {
+         remain[party._id] = googleMapMarkers[party._id];
+         googleMapMarkers[party._id] = null;
+       } else {
+         remain[party._id] = mapCreateMarkerForParty(party);
+       }
+  });
+
+   mapClearParties();
+   googleMapMarkers = remain;
+};
+
+var mapClearParties = function() {
+    if ( googleMapMarkers && Object.size(googleMapMarkers) > 0 ) {
+        for ( var key in googleMapMarkers ) {
+          var marker = googleMapMarkers[key];
+          if ( marker ) {
+            console.log( 'mapClearParties: removing marker:' + marker.title);
+            marker.setMap(null);
+          }
+        }
+        googleMapMarkers = [];
+    }
+};
+
+var mapRemoveParty = function(party) {
+    var marker = googleMapMarkers[party._id];
+    marker.setMap(null);
+    googleMapMarkers[party._id] = null;
+};
+
+Template.map.rendered = function(){
+
+  var self = this;
+  if (! self.handle) {
+    self.handle = Deps.autorun(function () {
+
+      if ( !Session.get("googleMapsReady")) {
+        return;
+      }
+      var selected = Session.get("selected");
+      var selectedParty = selected && Parties.findOne(selected);
+
+      if ( selectedParty ) {
+        console.log( 'map.rendered(): selectedParty:' + selectedParty.title);
+
+        /* TODO: Highlight the pushpin for the selected party */
+      }
+
+      /* refresh the map */
+      mapUpdateParties(Parties.find().fetch());
+
+    });
+  }
+};
+ 
+Template.map.destroyed = function () {
+   this.handle && this.handle.stop();
 };
 
 Template.map.selectParty = function(_PartyId, _x, _y){
@@ -278,11 +368,12 @@ Template.createDialog.events({
       };
       var id = createParty(party);
 
+      /* FIXME: we are selecting partyId but not updating url. */
       Session.set("selected", id);
       if (! public && Meteor.users.find().count() > 1)
         openInviteDialog();
       party._id = id;
-      Template.map.rendered(party);
+      mapAddParty(party);
       Session.set("showCreateDialog", false);
     } else {
       Session.set("createError",
