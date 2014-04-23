@@ -84,15 +84,21 @@
         
       <div>
         <strong>Created</strong>
-        <span class="label label-default pull-right">{{dateTimeText created}}</span>
+        <time class="label label-default pull-right" title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
+          {{legibleDateTimeText created}}
+        </time>
       </div>
       <div>
         <strong>Begins</strong>
-        <span class="label label-default pull-right">{{dateTimeText begins}}</span>
+        <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
+          {{legibleDateTimeText begins}}
+        </time>
       </div>
       <div>
         <strong>Until</strong>
-        <span class="label label-default pull-right">{{dateTimeText expires}}</span>
+        <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+          {{legibleDateTimeText expires}}
+        </time>
       </div>
 
         <div class="rsvp-buttons text-center">
