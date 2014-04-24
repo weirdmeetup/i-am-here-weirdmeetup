@@ -5,7 +5,8 @@
       "googlemaps": {},
       "iron-router": {},
       "bootstrap-3": {},
-      "accounts-ui-bootstrap-3-blaze": {}
+      "accounts-ui-bootstrap-3-blaze": {},
+      "moment": {}
     },
     "packages": {
       "googlemaps": {
@@ -27,6 +28,11 @@
         "git": "https://github.com/rajit/meteor-accounts-ui-bootstrap-3.git",
         "tag": "v0.3.6",
         "commit": "e8b1d1f9a2518dd91562f8096bd0831ae27e4e41"
+      },
+      "moment": {
+        "git": "https://github.com/acreeger/meteor-moment.git",
+        "tag": "v2.5.1",
+        "commit": "8c9bc5d3fc96705057737cb9743d555417f6e551"
       },
       "blaze-layout": {
         "git": "https://github.com/EventedMind/blaze-layout.git",
