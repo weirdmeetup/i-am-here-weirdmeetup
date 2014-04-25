@@ -52,28 +52,29 @@ Template.location.initCurrentLocation = function(location){
   Template.location.setMapToCurrentCoords(11);
 };
 
-Template.page.events({
-  'click .current-location': function (event, template) {
-    event.preventDefault();
-
-    if ( !Meteor.userId() ) {
-      /* TODO: Alert with error: need to be logged in */
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(Template.location.clickedCurrentLocation, openDisallowedDialog);
-
-  },
-  'click .move-current-location': function (event, template) {
-    event.preventDefault();
-
-    if ( !Meteor.userId() ) {
-      /* TODO: Alert with error: need to be logged in */
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(Template.location.clickedMoveCurrentLocation, openDisallowedDialog);
+btnClickedCurrentLocation = function (event, template) {
+  if(event) event.preventDefault();
+  Router.go('mapPage');
+  if ( !Meteor.userId() ) {
+    /* TODO: Alert with error: need to be logged in */
+      return;
   }
+  navigator.geolocation.getCurrentPosition(Template.location.clickedCurrentLocation, openDisallowedDialog);
+};
+
+btnClickedMoveCurrentLocation = function (event, template) {
+  if(event) event.preventDefault();
+  Router.go('mapPage');
+  if ( !Meteor.userId() ) {
+    /* TODO: Alert with error: need to be logged in */
+      return;
+  }
+  navigator.geolocation.getCurrentPosition(Template.location.clickedMoveCurrentLocation, openDisallowedDialog);
+};
+
+Template.page.events({
+  'click .current-location': btnClickedCurrentLocation,
+  'click .move-current-location': btnClickedMoveCurrentLocation
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,8 +212,14 @@ var GoogleMapsInit = function(callback, self){
     openCreateDialog(e.latLng.k,e.latLng.A);
   });
 
-  if(Session.get("onAfterAction")){
+  if(Session.get("forcedLocation")){
     Template.location.setMapToCurrentCoords();
+  }else if(Session.get("clickedCurrentLocation")){
+    btnClickedCurrentLocation();
+    Session.set("clickedCurrentLocation",false);
+  }else if(Session.get("clickedMoveCurrentLocation")){
+    btnClickedMoveCurrentLocation();
+    Session.set("clickedMoveCurrentLocation",false);
   }else{
     // if api load current position, the map will update the location
     navigator.geolocation.getCurrentPosition(Template.location.initCurrentLocation);
@@ -266,13 +273,13 @@ Template.map.selectParty = function(_PartyId, _x, _y){
 ///////////////////////////////////////////////////////////////////////////////
 // Create Party dialog
 
-var openCreateDialog = function (x, y) {
+openCreateDialog = function (x, y) {
   Session.set("createCoords", {x: x, y: y});
   Session.set("createError", null);
   Session.set("showCreateDialog", true);
 };
 
-Template.page.showCreateDialog = function () {
+Template.mapPage.showCreateDialog = function () {
   if(Session.get("showCreateDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   return Session.get("showCreateDialog");
@@ -333,7 +340,7 @@ var openInviteDialog = function () {
   Session.set("showInviteDialog", true);
 };
 
-Template.page.showInviteDialog = function () {
+Template.mapPage.showInviteDialog = function () {
   if(Session.get("showInviteDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   return Session.get("showInviteDialog");
@@ -371,13 +378,13 @@ Template.page.helpers({
 ///////////////////////////////////////////////////////////////////////////////
 // Location API Disallowed dialog
 
-var openDisallowedDialog = function () {
+openDisallowedDialog = function () {
   if(Session.get("showDisallowedDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   Session.set("showDisallowedDialog", true);
 };
 
-Template.page.showDisallowedDialog = function () {
+Template.mapPage.showDisallowedDialog = function () {
   if(Session.get("showDisallowedDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   return Session.get("showDisallowedDialog");
