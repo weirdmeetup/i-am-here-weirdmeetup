@@ -39,6 +39,7 @@ Template.location.setAPICurrentCoords = function(location){
 Template.location.setMapToCurrentCoords = function(zoom){
   if(typeof zoom == 'undefined') zoom = 16;
   var coords = Session.get("currentCoords");
+  if(!map) return;
   map.setCenter(new google.maps.LatLng( coords.x, coords.y ));
   map.setZoom(zoom);
 };
@@ -142,7 +143,7 @@ Template.details.events({
   'click .back-to-the-list': function(event){
     event.preventDefault();
     window.history.pushState(null, null, '/');
-    Session.set("selected", false);
+    Session.set("selected", null);
   },
   'click .rsvp_yes': function (event) {
     event.preventDefault();
