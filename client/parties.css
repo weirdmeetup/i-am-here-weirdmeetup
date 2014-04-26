@@ -25,13 +25,15 @@ html, body {
 
 .map-col,
 .sub-col {
-  position: fixed;
   height: 100%;
   padding-left: 0;
   padding-right: 0;
 }
-
+.map-col {
+  position: fixed;
+}
 .sub-col {
+  position: relative;
   overflow: auto;
 }
 
