@@ -30,6 +30,12 @@ Template.location.setCurrentCoords = function(location){
   Session.set("currentCoords", {x: currentLatitude, y: currentLongitude});
 };
 
+Template.location.setAPICurrentCoords = function(location){
+  var currentLatitude  = location.coords.latitude;
+  var currentLongitude = location.coords.longitude;
+  Session.set("APICurrentCoords", {x: currentLatitude, y: currentLongitude});
+};
+
 Template.location.setMapToCurrentCoords = function(zoom){
   if(typeof zoom == 'undefined') zoom = 16;
   var coords = Session.get("currentCoords");
@@ -44,17 +50,20 @@ Template.location.openCreateCurrentCoordsDialog = function(){
 
 Template.location.clickedCurrentLocation = function(location){
   Template.location.setCurrentCoords(location);
+  Template.location.setAPICurrentCoords(location);
   Template.location.setMapToCurrentCoords();
   Template.location.openCreateCurrentCoordsDialog();
 };
 
 Template.location.clickedMoveCurrentLocation = function(location){
   Template.location.setCurrentCoords(location);
+  Template.location.setAPICurrentCoords(location);
   Template.location.setMapToCurrentCoords();
 };
 
 Template.location.initCurrentLocation = function(location){
   Template.location.setCurrentCoords(location);
+  Template.location.setAPICurrentCoords(location);
   Template.location.setMapToCurrentCoords(11);
 };
 
@@ -292,7 +301,7 @@ Template.details.helpers ( {
     return Parties.find({}, {sort: {expires : -1}} );
   },
   calculateDistance : function(x, y){
-    var currentCoords = Session.get('currentCoords');
+    var currentCoords = Session.get('APICurrentCoords');
     if(!currentCoords) return false;
 
     var lat1 = x *1;
@@ -310,7 +319,9 @@ Template.details.helpers ( {
             Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
     var d = R * c;
-    return d.toFixed(2) + "km";
+    if(d > 1.0)
+      return d.toFixed(2) + "km";
+    return "Near";
   }
 });
 
