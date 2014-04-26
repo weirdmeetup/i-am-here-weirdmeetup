@@ -201,19 +201,25 @@
       <div class="meetup-list">
       {{#each parties}}
       <div class="meetup">
-        <h3 class="h4">
-          <a href="/meetups/{{_id}},{{x}},{{y}}">{{title}}</a>
-          <small>{{creatorName}}님 작성</small>
-        </h3>
-        <p>{{description}}</p>
-        <div class="meetup-meta">
-          <strong>Begins</strong> 
-          <time class="label label-default" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">{{legibleDateTimeText begins}}</time>
+        <div class="meetup-distance">
+          <i class="distance-icon fa fa-map-marker"></i>
+          <div class="distance-metric">{{calculateDistance x y}}</div>
+        </div>
+        <div class="meetup-item">
+          <h3 class="h4">
+            <a href="/meetups/{{_id}},{{x}},{{y}}">{{title}}</a>
+            <small>{{creatorName}}님 작성</small>
+          </h3>
+          <p>{{description}}</p>
+          <div class="meetup-meta">
+            <strong>Begins</strong> 
+            <time class="label label-default" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">{{legibleDateTimeText begins}}</time>
 
-          <strong>Until</strong> 
-          <time class="label label-default" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
-            {{legibleDateTimeText expires}}
-          </time>
+            <strong>Until</strong> 
+            <time class="label label-default" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+              {{legibleDateTimeText expires}}
+            </time>
+          </div>
         </div>
       </div>
       {{/each}}

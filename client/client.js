@@ -10,6 +10,12 @@ Object.size = function(obj) {
     return size;
 };
 
+/** Converts numeric degrees to radians */
+if (typeof(Number.prototype.toRad) === "undefined") {
+  Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+  }
+}
 
 Meteor.subscribe("directory");
 Meteor.subscribe("activeParties");
@@ -284,6 +290,27 @@ Template.map.selectParty = function(_PartyId, _x, _y){
 Template.details.helpers ( {
   parties: function() {
     return Parties.find({}, {sort: {expires : -1}} );
+  },
+  calculateDistance : function(x, y){
+    var currentCoords = Session.get('currentCoords');
+    if(!currentCoords) return false;
+
+    var lat1 = x *1;
+    var lon1 = y *1;
+    var lat2 = currentCoords.x *1;
+    var lon2 = currentCoords.y *1;
+
+    var R = 6371; // km
+    var dLat = (lat2-lat1).toRad();
+    var dLon = (lon2-lon1).toRad();
+    lat1 = lat1.toRad();
+    lat2 = lat2.toRad();
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c;
+    return d.toFixed(2) + "km";
   }
 });
 

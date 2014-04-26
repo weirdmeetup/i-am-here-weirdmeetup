@@ -84,15 +84,32 @@ html, body {
   background: #fafaff;
 }
 
-.meetup-list > .meetup > .meetup-meta {
-  margin-bottom: 10px;
+.meetup-list .meetup-distance {
+  padding-top: 20px;
+  width: 90px;
+  float: left;
+  text-align: center;
 }
-
-.meetup-list > .meetup > .meetup-meta strong {
+.meetup-list .meetup-distance > .distance-icon {
+  font-size: 250%;
+}
+.meetup-list .meetup-distance > .distance-metric {
   font-size: 75%;
 }
 
-.meetup-list > .meetup > .meetup-meta strong + time {
+.meetup-list .meetup-item {
+  margin-left: 95px;
+}
+
+.meetup-list .meetup-item > .meetup-meta {
+  margin-bottom: 10px;
+}
+
+.meetup-list .meetup-item > .meetup-meta strong {
+  font-size: 75%;
+}
+
+.meetup-list .meetup-item > .meetup-meta strong + time {
   margin-right: 4px;
 }
 
