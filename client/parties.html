@@ -23,11 +23,12 @@
        <a class="navbar-brand" href="{{pathFor 'mapPage'}}">I'm here #이상한모임</a>
       </div>
       <div class="navbar-collapse collapse">
-        <a href="/current-location" class="current-location btn btn-primary btn-sm navbar-btn">현재 위치로 이상한모임 시작하기</a>
-        <a href="/where-am-i" class="move-current-location btn btn-primary btn-sm navbar-btn">내 위치로 가기</a>
         <ul class="nav navbar-nav">
           <li><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></li>
         </ul>
+        <a href="/where-am-i" class="move-current-location btn btn-primary btn-sm navbar-btn">내 위치</a>
+        <a href="/current-location" class="current-location btn btn-primary btn-sm navbar-btn">현재 위치로 이상한모임 시작하기</a>
+
         <div class="nav navbar-nav navbar-right">
           {{> loginButtons align="right"}}
         </div>
@@ -83,7 +84,7 @@
 
     {{#if party}}
       <nav class="navbar navbar-default col-sm-6 col-md-5 sub-navbar" role="navigation">
-        <div class="container-fluid">
+        <div class="container-fluid container-fluid-wide">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header visible-xs">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-details-setting">
@@ -96,9 +97,9 @@
           </div>
 
           <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="nav-details-setting">
+          <div class="collapse navbar-collapse navbar-collapse" id="nav-details-setting">
             <ul class="nav navbar-nav">
-              <li><a href="/">목록보기</a></li>
+              <li><a href="{{pathFor 'mapPage'}}" class="back-to-the-list">목록보기</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li><a href="#">공유하기</a></li>
@@ -172,6 +173,24 @@
         {{/with}}
       </div>
     {{else}}
+      <nav class="navbar navbar-default col-sm-6 col-md-5 sub-navbar" role="navigation">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-list">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">이상한모임 목록</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="nav-list">
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
       <h1 class="text-info text-center">
         {{#if anyParties}}
           맵에서 모임 표시를 눌러보세요
@@ -179,6 +198,26 @@
           가입한 후 맵을 더블클릭하면 모임을 시작할 수 있어요
         {{/if}}
       </h1>
+      <div class="meetup-list">
+      {{#each parties}}
+      <div class="meetup">
+        <h3 class="h4">
+          <a href="/meetups/{{_id}},{{x}},{{y}}">{{title}}</a>
+          <small>{{creatorName}}님 작성</small>
+        </h3>
+        <p>{{description}}</p>
+        <div class="meetup-meta">
+          <strong>Begins</strong> 
+          <time class="label label-default" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">{{legibleDateTimeText begins}}</time>
+
+          <strong>Until</strong> 
+          <time class="label label-default" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+            {{legibleDateTimeText expires}}
+          </time>
+        </div>
+      </div>
+      {{/each}}
+      </div>
     {{/if}}
   </div>
 </template>

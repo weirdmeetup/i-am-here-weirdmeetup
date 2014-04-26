@@ -39,7 +39,7 @@ html, body {
   padding-top: 51px;
 }
 
-.sub-navbar > .container-fluid {
+.sub-navbar > .container-fluid-wide {
   padding-left: 0;
 }
 
@@ -66,9 +66,34 @@ html, body {
   border-bottom-width: 1px;
 }
 
-.sub-navbar .navbar-collapse {
+.sub-navbar .container-fluid-wide .navbar-collapse {
   padding-left: 0;
   padding-right: 0;
+}
+
+.meetup-list {
+
+}
+
+.meetup-list > .meetup {
+  padding: 10px;
+  border-top: 1px solid #efefef;
+}
+
+.meetup-list > .meetup:hover {
+  background: #fafaff;
+}
+
+.meetup-list > .meetup > .meetup-meta {
+  margin-bottom: 10px;
+}
+
+.meetup-list > .meetup > .meetup-meta strong {
+  font-size: 75%;
+}
+
+.meetup-list > .meetup > .meetup-meta strong + time {
+  margin-right: 4px;
 }
 
 @media (max-width: 767px) {
@@ -90,7 +115,7 @@ html, body {
     position: static;
   }
 
-  .sub-navbar .navbar-collapse {
+  .sub-navbar .container-fluid-wide .navbar-collapse {
     padding-left: 15px;
     padding-right: 15px;
   }

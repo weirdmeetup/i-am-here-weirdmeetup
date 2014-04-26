@@ -124,26 +124,31 @@ Template.details.legibleDateTimeText = function(date) {
 }
 
 Template.details.events({
-  'click .rsvp_yes': function () {
+  'click .back-to-the-list': function(event){
+    event.preventDefault();
+    window.history.pushState(null, null, '/');
+    Session.set("selected", false);
+  },
+  'click .rsvp_yes': function (event) {
+    event.preventDefault();
     Meteor.call("rsvp", Session.get("selected"), "yes");
-    return false;
   },
-  'click .rsvp_maybe': function () {
+  'click .rsvp_maybe': function (event) {
+    event.preventDefault();
     Meteor.call("rsvp", Session.get("selected"), "maybe");
-    return false;
   },
-  'click .rsvp_no': function () {
+  'click .rsvp_no': function (event) {
+    event.preventDefault();
     Meteor.call("rsvp", Session.get("selected"), "no");
-    return false;
   },
-  'click .invite': function () {
+  'click .invite': function (event) {
+    event.preventDefault();
     openInviteDialog();
-    return false;
   },
-  'click .remove': function () {
+  'click .remove': function (event) {
+    event.preventDefault();
     Parties.remove(this._id);
     window.history.pushState(null, null, '/');
-    return false;
   }
 });
 
@@ -265,10 +270,22 @@ Template.map.destroyed = function () {
 };
 
 Template.map.selectParty = function(_PartyId, _x, _y){
-    longitude = _x;
-    latitude = _y;
+    var location  = {
+      coords : {
+        latitude : _x,
+        longitude : _y
+      }
+    };
     Session.set("selected", _PartyId);
+    Template.location.setCurrentCoords(location);
+    Template.location.setMapToCurrentCoords();
 }
+
+Template.details.helpers ( {
+  parties: function() {
+    return Parties.find({}, {sort: {expires : -1}} );
+  }
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create Party dialog
