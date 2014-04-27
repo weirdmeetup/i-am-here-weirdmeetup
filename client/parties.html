@@ -1,14 +1,48 @@
 <head>
   <title>I'm here #이상한모임</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
 </head>
 
 <body>
-  <!-- {{> page}} -->
 </body>
 
-<template name="page">
 
+<template name="page">
+<!-- Layout Template -->
+
+  <!-- Static navbar -->
+  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+       <a class="navbar-brand" href="{{pathFor 'mapPage'}}">I'm here #이상한모임</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></li>
+        </ul>
+        <a href="/where-am-i" class="move-current-location btn btn-primary btn-sm navbar-btn">내 위치</a>
+        <a href="/current-location" class="current-location btn btn-primary btn-sm navbar-btn">현재 위치로 이상한모임 시작하기</a>
+
+        <div class="nav navbar-nav navbar-right">
+          {{> loginButtons align="right"}}
+        </div>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+  
+  <div class="content">
+    {{> yield}}
+  </div>
+
+</template>
+
+<template name="mapPage">
   {{> location}}
 
   {{#if showCreateDialog}}
@@ -23,43 +57,17 @@
     {{> disallowedDialog}}
   {{/if}}
 
-
-  <!-- Static navbar -->
-  <div class="navbar navbar-default navbar-static-top" role="navigation">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-       <a class="navbar-brand" href="{{pathFor 'page'}}">I'm here #이상한모임</a>
-      </div>
-      <div class="navbar-collapse collapse">
-        <a href="#" class="current-location btn btn-primary btn-sm navbar-btn">현재 위치로 이상한모임 시작하기</a>
-        <a href="#" class="move-current-location btn btn-primary btn-sm navbar-btn">내 위치로 가기</a>
-        <ul class="nav navbar-nav">
-          <li><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></li>
-        </ul>
-        <div class="nav navbar-nav navbar-right">
-          {{> loginButtons align="right"}}
-        </div>
-      </div><!--/.nav-collapse -->
-    </div>
-  </div>
-
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-sm-6 col-md-7 map-col">
         {{> map}}
         {{#if currentUser}}
-        <div class="text-center">
+        <div class="map-info-text text-center">
           <em><small>지도를 더블클릭하면 이상한 모임을 시작할 수 있습니당!</small></em>
         </div>
         {{/if}}
       </div>
-      <div class="col-md-6">
+      <div class="col-sm-offset-6 col-sm-6 col-md-offset-7 col-md-5 sub-col">
         {{> details}}
       </div>
     </div>
@@ -72,65 +80,111 @@
 <template name="location">
 </template>
 <template name="details">
-  <div class="details">
+  <div class="details sub-content">
+
     {{#if party}}
-      {{#with party}}
-        <h1>{{title}}</h1>
-        #이상한모임 공유하기
-        <a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="twitter-share-button" target="_blank">Tweet</a>
-        <div class="description">{{description}}</div>
+      <nav class="navbar navbar-default col-sm-6 col-md-5 sub-navbar" role="navigation">
+        <div class="container-fluid container-fluid-wide">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header visible-xs">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-details-setting">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">이상한모임 정보</a>
+          </div>
 
-        {{> attendance}}
-        
-      <div>
-        <strong>Created</strong>
-        <time class="label label-default pull-right" title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
-          {{legibleDateTimeText created}}
-        </time>
-      </div>
-      <div>
-        <strong>Begins</strong>
-        <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
-          {{legibleDateTimeText begins}}
-        </time>
-      </div>
-      <div>
-        <strong>Until</strong>
-        <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
-          {{legibleDateTimeText expires}}
-        </time>
-      </div>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse navbar-collapse" id="nav-details-setting">
+            <ul class="nav navbar-nav">
+              <li><a href="{{pathFor 'mapPage'}}" class="back-to-the-list">목록보기</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">공유하기</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">관리 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">2시간 연장하기</a></li>
+                  <li><a href="#">삭제하기</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+      <div class="meetup-info col-sm-12">
+        {{#with party}}
+          <h1>{{title}}</h1>
+          #이상한모임 공유하기
+          <a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="twitter-share-button" target="_blank">Tweet</a>
+          <div class="description">{{description}}</div>
 
-        <div class="rsvp-buttons text-center">
-          {{#if currentUser}}
-            <input type="button" value="나도 갈래염!"
-                   class="btn btn-default btn-sm rsvp_yes {{maybeChosen "yes"}}">
-            <input type="button" value="아마도"
-                   class="btn btn-default btn-sm rsvp_maybe {{maybeChosen "maybe"}}">
-            <input type="button" value="못가요.."
-                   class="btn btn-default btn-sm rsvp_no {{maybeChosen "no"}}">
-          {{else}}
-            <i>가입하고 이상한 모임 함께해요!</i>
-          {{/if}}
-          <p><small>{{creatorName}}님 작성</small></p>
+          {{> attendance}}
+          
+        <div>
+          <strong>Created</strong>
+          <time class="label label-default pull-right" title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
+            {{legibleDateTimeText created}}
+          </time>
+        </div>
+        <div>
+          <strong>Begins</strong>
+          <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
+            {{legibleDateTimeText begins}}
+          </time>
+        </div>
+        <div>
+          <strong>Until</strong>
+          <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+            {{legibleDateTimeText expires}}
+          </time>
         </div>
 
-        {{#if canRemove}}
-          <div class="alert alert-info"><small>
-            아무도 안온다면 과감하게 
-              <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
-          </small></div>
-        {{/if}}
-        {{#if canFinish}}
-          <div class="alert alert-info"><small>
-            이상한 모임이 종료되었다면 
-              <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
-          </small></div>
-        {{/if}}
-        {{> comments}}
+          <div class="rsvp-buttons text-center">
+            {{#if currentUser}}
+              <input type="button" value="나도 갈래염!"
+                     class="btn btn-default btn-sm rsvp_yes {{maybeChosen "yes"}}">
+              <input type="button" value="아마도"
+                     class="btn btn-default btn-sm rsvp_maybe {{maybeChosen "maybe"}}">
+              <input type="button" value="못가요.."
+                     class="btn btn-default btn-sm rsvp_no {{maybeChosen "no"}}">
+            {{else}}
+              <i>가입하고 이상한 모임 함께해요!</i>
+            {{/if}}
+            <p><small>{{creatorName}}님 작성</small></p>
+          </div>
 
-      {{/with}}
+          {{#if canRemove}}
+            <div class="alert alert-info"><small>
+              아무도 안온다면 과감하게 
+                <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
+            </small></div>
+          {{/if}}
+          {{#if canFinish}}
+            <div class="alert alert-info"><small>
+              이상한 모임이 종료되었다면 
+                <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
+            </small></div>
+          {{/if}}
+          {{> comments}}
+
+        {{/with}}
+      </div>
     {{else}}
+      <nav class="navbar navbar-default col-sm-6 col-md-5 sub-navbar" role="navigation">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">이상한모임 목록</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="nav-list">
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
       <h1 class="text-info text-center">
         {{#if anyParties}}
           맵에서 모임 표시를 눌러보세요
@@ -138,6 +192,32 @@
           가입한 후 맵을 더블클릭하면 모임을 시작할 수 있어요
         {{/if}}
       </h1>
+      <div class="meetup-list">
+      {{#each parties}}
+      <div class="meetup">
+        <div class="meetup-distance">
+          <i class="distance-icon fa fa-map-marker"></i>
+          <div class="distance-metric">{{calculateDistance x y}}</div>
+        </div>
+        <div class="meetup-item">
+          <h3 class="h4">
+            <a href="/meetups/{{_id}},{{x}},{{y}}">{{title}}</a>
+            <small>{{creatorName}}님 작성</small>
+          </h3>
+          <p>{{description}}</p>
+          <div class="meetup-meta">
+            <strong>Begins</strong> 
+            <time class="label label-default" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">{{legibleDateTimeText begins}}</time>
+
+            <strong>Until</strong> 
+            <time class="label label-default" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+              {{legibleDateTimeText expires}}
+            </time>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+      </div>
     {{/if}}
   </div>
 </template>
@@ -317,5 +397,16 @@
   <div class="well well-small">
       <textarea class="comment-body form-control" id="comment-body" rows="2"></textarea>   
       <button type="button" class="btn btn-sm btn-primary comment">Comment</button>
+  </div>
+</template>
+
+
+<template name="myPage">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="h4">My Meetup <small>meeeetttuuuppppp!!</small></h1>
+      </div>
+    </div>
   </div>
 </template>

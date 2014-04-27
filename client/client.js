@@ -10,6 +10,12 @@ Object.size = function(obj) {
     return size;
 };
 
+/** Converts numeric degrees to radians */
+if (typeof(Number.prototype.toRad) === "undefined") {
+  Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+  }
+}
 
 Meteor.subscribe("directory");
 Meteor.subscribe("activeParties");
@@ -24,9 +30,16 @@ Template.location.setCurrentCoords = function(location){
   Session.set("currentCoords", {x: currentLatitude, y: currentLongitude});
 };
 
+Template.location.setAPICurrentCoords = function(location){
+  var currentLatitude  = location.coords.latitude;
+  var currentLongitude = location.coords.longitude;
+  Session.set("APICurrentCoords", {x: currentLatitude, y: currentLongitude});
+};
+
 Template.location.setMapToCurrentCoords = function(zoom){
   if(typeof zoom == 'undefined') zoom = 16;
   var coords = Session.get("currentCoords");
+  if(!map) return;
   map.setCenter(new google.maps.LatLng( coords.x, coords.y ));
   map.setZoom(zoom);
 };
@@ -38,42 +51,46 @@ Template.location.openCreateCurrentCoordsDialog = function(){
 
 Template.location.clickedCurrentLocation = function(location){
   Template.location.setCurrentCoords(location);
+  Template.location.setAPICurrentCoords(location);
   Template.location.setMapToCurrentCoords();
   Template.location.openCreateCurrentCoordsDialog();
 };
 
 Template.location.clickedMoveCurrentLocation = function(location){
   Template.location.setCurrentCoords(location);
+  Template.location.setAPICurrentCoords(location);
   Template.location.setMapToCurrentCoords();
 };
 
 Template.location.initCurrentLocation = function(location){
   Template.location.setCurrentCoords(location);
+  Template.location.setAPICurrentCoords(location);
   Template.location.setMapToCurrentCoords(11);
 };
 
-Template.page.events({
-  'click .current-location': function (event, template) {
-    event.preventDefault();
-
-    if ( !Meteor.userId() ) {
-      /* TODO: Alert with error: need to be logged in */
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(Template.location.clickedCurrentLocation, openDisallowedDialog);
-
-  },
-  'click .move-current-location': function (event, template) {
-    event.preventDefault();
-
-    if ( !Meteor.userId() ) {
-      /* TODO: Alert with error: need to be logged in */
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(Template.location.clickedMoveCurrentLocation, openDisallowedDialog);
+btnClickedCurrentLocation = function (event, template) {
+  if(event) event.preventDefault();
+  Router.go('mapPage');
+  if ( !Meteor.userId() ) {
+    /* TODO: Alert with error: need to be logged in */
+      return;
   }
+  navigator.geolocation.getCurrentPosition(Template.location.clickedCurrentLocation, openDisallowedDialog);
+};
+
+btnClickedMoveCurrentLocation = function (event, template) {
+  if(event) event.preventDefault();
+  Router.go('mapPage');
+  if ( !Meteor.userId() ) {
+    /* TODO: Alert with error: need to be logged in */
+      return;
+  }
+  navigator.geolocation.getCurrentPosition(Template.location.clickedMoveCurrentLocation, openDisallowedDialog);
+};
+
+Template.page.events({
+  'click .current-location': btnClickedCurrentLocation,
+  'click .move-current-location': btnClickedMoveCurrentLocation
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,26 +140,31 @@ Template.details.legibleDateTimeText = function(date) {
 }
 
 Template.details.events({
-  'click .rsvp_yes': function () {
+  'click .back-to-the-list': function(event){
+    event.preventDefault();
+    window.history.pushState(null, null, '/');
+    Session.set("selected", null);
+  },
+  'click .rsvp_yes': function (event) {
+    event.preventDefault();
     Meteor.call("rsvp", Session.get("selected"), "yes");
-    return false;
   },
-  'click .rsvp_maybe': function () {
+  'click .rsvp_maybe': function (event) {
+    event.preventDefault();
     Meteor.call("rsvp", Session.get("selected"), "maybe");
-    return false;
   },
-  'click .rsvp_no': function () {
+  'click .rsvp_no': function (event) {
+    event.preventDefault();
     Meteor.call("rsvp", Session.get("selected"), "no");
-    return false;
   },
-  'click .invite': function () {
+  'click .invite': function (event) {
+    event.preventDefault();
     openInviteDialog();
-    return false;
   },
-  'click .remove': function () {
+  'click .remove': function (event) {
+    event.preventDefault();
     Parties.remove(this._id);
     window.history.pushState(null, null, '/');
-    return false;
   }
 });
 
@@ -211,8 +233,14 @@ var GoogleMapsInit = function(callback, self){
     openCreateDialog(e.latLng.k,e.latLng.A);
   });
 
-  if(Session.get("onAfterAction")){
+  if(Session.get("forcedLocation")){
     Template.location.setMapToCurrentCoords();
+  }else if(Session.get("clickedCurrentLocation")){
+    btnClickedCurrentLocation();
+    Session.set("clickedCurrentLocation",false);
+  }else if(Session.get("clickedMoveCurrentLocation")){
+    btnClickedMoveCurrentLocation();
+    Session.set("clickedMoveCurrentLocation",false);
   }else{
     // if api load current position, the map will update the location
     navigator.geolocation.getCurrentPosition(Template.location.initCurrentLocation);
@@ -258,21 +286,56 @@ Template.map.destroyed = function () {
 };
 
 Template.map.selectParty = function(_PartyId, _x, _y){
-    longitude = _x;
-    latitude = _y;
+    var location  = {
+      coords : {
+        latitude : _x,
+        longitude : _y
+      }
+    };
     Session.set("selected", _PartyId);
+    Template.location.setCurrentCoords(location);
+    Template.location.setMapToCurrentCoords();
 }
+
+Template.details.helpers ( {
+  parties: function() {
+    return Parties.find({}, {sort: {expires : -1}} );
+  },
+  calculateDistance : function(x, y){
+    var currentCoords = Session.get('APICurrentCoords');
+    if(!currentCoords) return false;
+
+    var lat1 = x *1;
+    var lon1 = y *1;
+    var lat2 = currentCoords.x *1;
+    var lon2 = currentCoords.y *1;
+
+    var R = 6371; // km
+    var dLat = (lat2-lat1).toRad();
+    var dLon = (lon2-lon1).toRad();
+    lat1 = lat1.toRad();
+    lat2 = lat2.toRad();
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c;
+    if(d > 1.0)
+      return d.toFixed(2) + "km";
+    return "Near";
+  }
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create Party dialog
 
-var openCreateDialog = function (x, y) {
+openCreateDialog = function (x, y) {
   Session.set("createCoords", {x: x, y: y});
   Session.set("createError", null);
   Session.set("showCreateDialog", true);
 };
 
-Template.page.showCreateDialog = function () {
+Template.mapPage.showCreateDialog = function () {
   if(Session.get("showCreateDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   return Session.get("showCreateDialog");
@@ -333,7 +396,7 @@ var openInviteDialog = function () {
   Session.set("showInviteDialog", true);
 };
 
-Template.page.showInviteDialog = function () {
+Template.mapPage.showInviteDialog = function () {
   if(Session.get("showInviteDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   return Session.get("showInviteDialog");
@@ -371,13 +434,13 @@ Template.page.helpers({
 ///////////////////////////////////////////////////////////////////////////////
 // Location API Disallowed dialog
 
-var openDisallowedDialog = function () {
+openDisallowedDialog = function () {
   if(Session.get("showDisallowedDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   Session.set("showDisallowedDialog", true);
 };
 
-Template.page.showDisallowedDialog = function () {
+Template.mapPage.showDisallowedDialog = function () {
   if(Session.get("showDisallowedDialog")) jQuery("body").addClass("modal-open");
   else jQuery("body").removeClass("modal-open");
   return Session.get("showDisallowedDialog");

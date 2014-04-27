@@ -1,30 +1,165 @@
+html, body {
+  height: 100%;
+}
+
 .account-section {
-    text-align: right;
+  text-align: right;
 }
 
 #map-canvas {
-    width: 100%;
-    height: 500px;
+  width: 100%;
+  height: 100%;
 }
 
 #map-canvas img {
-    max-width: none;
+  max-width: none;
+}
+
+.details-nav {
+  position: relative;
+}
+
+.content > .container-fluid > .row > div {
+  padding-top: 51px;
+}
+
+.map-col,
+.sub-col {
+  height: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+.map-col {
+  position: fixed;
+}
+.sub-col {
+  position: relative;
+  overflow: auto;
+}
+
+.sub-col > .sub-content {
+  padding-top: 51px;
+}
+
+.sub-navbar > .container-fluid-wide {
+  padding-left: 0;
+}
+
+.map-info-text {
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+}
+
+.map-info-text > em {
+  padding: 10px;
+  background: #fff;
+  border-radius: 5px 5px 0 0;
+  box-shadow: 0px -1px 4px rgba(0,0,0,0.2);
+}
+
+.sub-navbar {
+  z-index: 1;
+  position: fixed;
+  top: 51px;
+  padding: 0;
+  border-radius: 0;
+  border-width: 0;
+  border-bottom-width: 1px;
+}
+
+.sub-navbar .container-fluid-wide .navbar-collapse {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.meetup-list {
+
+}
+
+.meetup-list > .meetup {
+  padding: 10px;
+  border-top: 1px solid #efefef;
+}
+
+.meetup-list > .meetup:hover {
+  background: #fafaff;
+}
+
+.meetup-list .meetup-distance {
+  padding-top: 20px;
+  width: 90px;
+  float: left;
+  text-align: center;
+}
+.meetup-list .meetup-distance > .distance-icon {
+  font-size: 250%;
+}
+.meetup-list .meetup-distance > .distance-metric {
+  font-size: 75%;
+}
+
+.meetup-list .meetup-item {
+  margin-left: 95px;
+}
+
+.meetup-list .meetup-item > .meetup-meta {
+  margin-bottom: 10px;
+}
+
+.meetup-list .meetup-item > .meetup-meta strong {
+  font-size: 75%;
+}
+
+.meetup-list .meetup-item > .meetup-meta strong + time {
+  margin-right: 4px;
 }
 
 @media (max-width: 767px) {
-    #map-canvas {
-        height: 200px;
-    }
+  #map-canvas {
+    height: 200px;
+  }
+
+  .sub-col > .sub-content {
+    padding-top: 0;
+  }
+
+  .content > .container-fluid > .row > .sub-col {
+    padding-top: 0;
+  }
+
+  .sub-navbar {
+    width: 100%;
+    padding-left: 15px;
+    position: static;
+  }
+
+  .sub-navbar .container-fluid-wide .navbar-collapse {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .map-col,
+    .sub-col {
+    height: auto;
+    padding-top: 0;
+  }
+
+  .map-col {
+    position: relative;
+    padding-top: 51px;
+  }
+
+  .sub-col {
+    position: static;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
-
-
 }
 
-@media (min-width: 1200px) { 
-
+@media (min-width: 1200px) {
 }
