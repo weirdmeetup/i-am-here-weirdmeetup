@@ -3,15 +3,34 @@ i-am-here-weirdmeetup
 
 I am here 이상한 모임 좌표 알림 서비스
 
-* http://i-am-here-weirdmeetup.meteor.com/
+* http://iamhere.weirdmeetup.com
 * 이상한 모임이란? http://weirdmeetup.com
 * 이상한모임 팀블로그 http://we.weirdmeetup.com
 
 Installation
 ------------
 
-- 'meteorite' is required ( <code> $ npm install -g meteorite </code> # you may need to sudo
-)
-- No need to <code>$ mrt add googlemaps</code> since it's already done and applied to the repo (.meteor/packages)
-- After cloning, you need to run 'mrt' instead of 'meteor', at LEAST ONCE
-- And then, now you can use 'meteor' command to run or deploy
+`nodejs`, `meteor` and `meteorite` are required.
+
+  * [nodejs](http://nodejs.org/)
+  * [meteor](https://www.meteor.com/)
+  * [meteorite](https://github.com/oortcloud/meteorite/)
+
+Download and install `nodejs` from [website](http://nodejs.org/). And then install `meteor`.
+
+    $ curl https://install.meteor.com/ | sh
+
+Clone repository from github and change to cloned directory.
+
+    $ git clone https://github.com/weirdmeetup/i-am-here-weirdmeetup.git && cd i-am-here-weirdmeetup
+
+Install `meteorite` and update related packages.
+    
+    $ npm install -g meteorite
+    $ mrt update
+
+Now you can run the code with local or deploy to meteor server.
+
+    $ meteor
+    or
+    $ meteor deploy YOUR_METEOR_ADDRESS.meteor.com
