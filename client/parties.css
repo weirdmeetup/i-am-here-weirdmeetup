@@ -115,6 +115,24 @@ html, body {
   margin-right: 4px;
 }
 
+.meetup-info > .page-header {
+  margin: 15px 0 10px;
+}
+.meetup-info > .description {
+  margin-bottom: 10px;
+}
+
+.meetup-info > .meta {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.meetup-info > .meta .fa-twitter:before {
+  color: #3b88c3;
+}
+.meetup-info > .meta .fa-facebook:before {
+  color: #3b5998;
+}
 
 .comments p {
   margin: 0;

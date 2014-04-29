@@ -127,8 +127,12 @@ Template.details.maybeChosen = function (what) {
   var myRsvp = _.find(this.rsvps, function (r) {
     return r.user === Meteor.userId();
   }) || {};
-
-  return what == myRsvp.rsvp ? "chosen btn-inverse" : "";
+  var chosen = {
+    'yes' : 'success',
+    'maybe' : 'info',
+    'no': 'danger'
+  };
+  return what == myRsvp.rsvp ? "chosen btn-" + chosen[what] : "";
 };
 
 Template.details.text = function () {
