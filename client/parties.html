@@ -364,29 +364,33 @@
 
 <template name="comments">
   <div><strong>Comments</strong></div>
-    <ul class="list-group">
-    {{#each comments}}
-      {{> comment }}
-    {{/each}}
-    </ul>
 
     {{#if currentUser}}
       {{ > commentform }}
     {{else}}
       <p class="text-center">Sign in to comment</p>
     {{/if}}
+    {{#if anyComments}}
+    <ul class="list-group comments">
+    {{#each comments}}
+      {{> comment }}
+    {{/each}}
+    </ul>
+    {{else}}
+    <p class="no-comments"><i class="fa fa-comments"></i> Be the first to comment.</p>
+    {{/if}}
 </template>
 
 <template name="comment">
   <li class="list-group-item">
-    <span class="glyphicon glyphicon-user"></span>
-    <span class="author">{{author}}</span>
-    <p>
-      <span class="date">on {{submittedText}}</span>
-    </p>
-    <div class="well well-small">
-    <p>{{body}}</p>
+    <div class="meta">
+      <i class="fa fa-user"></i>
+      <span class="author"><a href="#">{{author}}</a></span>
+      <time class="submitted" title="{{submittedText}}" datetime="{{submittedText}}">
+        {{submittedMomentText}}
+      </time>
     </div>
+    <p>{{body}}</p>
   </li>
 </template>
 
@@ -394,9 +398,12 @@
   {{#if error}}
     <div class="bg-warning" style="padding: 5px;">{{error}}</div>
   {{/if}}
-  <div class="well well-small">
-      <textarea class="comment-body form-control" id="comment-body" rows="2"></textarea>   
-      <button type="button" class="btn btn-sm btn-primary comment">Comment</button>
+
+  <div class="comment-form input-group input-group-sm">
+    <input type="text" class="comment-body form-control">
+    <span class="input-group-btn">
+      <button class="btn btn-primary btn-sm comment" type="button"><i class="fa fa-comment"></i> Send</button>
+    </span>
   </div>
 </template>
 

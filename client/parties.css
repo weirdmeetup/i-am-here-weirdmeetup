@@ -115,6 +115,44 @@ html, body {
   margin-right: 4px;
 }
 
+
+.comments p {
+  margin: 0;
+}
+
+.comments p + p {
+  margin-top: 5px;
+}
+
+.comments .meta {
+  font-size: 12px;
+  line-height: 26px;
+}
+
+.comments .meta .author {
+  font-weight: bold;
+}
+
+.comments .meta .submitted {
+  margin-left: 4px;
+  font-size: 10px;
+  color: #666;
+}
+
+.comment-form {
+  margin: 10px 0;
+}
+
+.no-comments {
+  padding: 15px 0;
+  text-align: center;
+  color: #ccc;
+}
+.no-comments .fa {
+  display: block;
+  font-size: 5em;
+}
+
 @media (max-width: 767px) {
   #map-canvas {
     height: 200px;
