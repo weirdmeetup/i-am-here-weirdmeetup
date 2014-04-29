@@ -59,7 +59,7 @@ html, body {
 }
 
 .sub-navbar {
-  z-index: 1;
+  z-index: 10;
   position: fixed;
   top: 51px;
   padding: 0;
@@ -118,19 +118,20 @@ html, body {
 .meetup-info > .page-header {
   margin: 15px 0 10px;
 }
+
+.meetup-info > .page-header .created {
+  font-size: 10px;
+  line-height: 26px;
+}
 .meetup-info > .description {
   margin-bottom: 10px;
+  min-height: 75px;
 }
 
-.meetup-info > .meta {
-  text-align: right;
-  margin-bottom: 10px;
-}
-
-.meetup-info > .meta .fa-twitter:before {
+.social-share .fa-twitter:before {
   color: #3b88c3;
 }
-.meetup-info > .meta .fa-facebook:before {
+.social-share .fa-facebook:before {
   color: #3b5998;
 }
 
@@ -169,6 +170,10 @@ html, body {
 .no-comments .fa {
   display: block;
   font-size: 5em;
+}
+
+.rsvp-buttons {
+  margin: 20px 0 40px;
 }
 
 @media (max-width: 767px) {

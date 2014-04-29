@@ -124,47 +124,60 @@
       </nav>
       <div class="meetup-info col-sm-12">
         {{#with party}}
-          <h1 class="page-header h4">{{title}}</h1>
+          <h1 class="page-header h4">
+            {{title}} <small>{{creatorName}}님 작성</small>
+            <small class="created pull-right"><time title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
+              {{legibleDateTimeText created}}
+            </time></small>
+          </h1>
 
           <div class="description">{{description}}</div>
-
-          <div class="meta">
-            <a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="btn btn-default btn-xs twitter-share-button" target="_blank"><i class="fa fa-twitter"></i> Tweet</a> 
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{text}}&t={{title}}%20-%20{{description}}" class="btn btn-default btn-xs facebook-share-button" target="_blank"><i class="fa fa-facebook"></i> Facebook</a>
-          </div>
-
-          {{> attendance}}
           
-        <div>
-          <strong>Created</strong>
-          <time class="label label-default pull-right" title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
-            {{legibleDateTimeText created}}
-          </time>
-        </div>
-        <div>
-          <strong>Begins</strong>
-          <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
-            {{legibleDateTimeText begins}}
-          </time>
-        </div>
-        <div>
-          <strong>Until</strong>
-          <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
-            {{legibleDateTimeText expires}}
-          </time>
-        </div>
+          <div class="row">
+            <div class="col-md-6">
+              {{> attendance}}
+            </div>
 
+            <div class="col-md-6">
+              <div class="schedule">
+                <div>
+                  <strong>Begins</strong>
+                  <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
+                    {{legibleDateTimeText begins}}
+                  </time>
+                </div>
+                <div>
+                  <strong>Until</strong>
+                  <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+                    {{legibleDateTimeText expires}}
+                  </time>
+                </div>
+              </div>
+
+            </div>
+          </div>
           <div class="rsvp-buttons text-center">
             {{#if currentUser}}
-              <button class="btn btn-default btn-sm rsvp_yes {{maybeChosen "yes"}}">나도 갈래염!</button> 
-              <button class="btn btn-default btn-sm rsvp_maybe {{maybeChosen "maybe"}}">아마도</button> 
-              <button class="btn btn-default btn-sm rsvp_no {{maybeChosen "no"}}">못가요..</button>
+              <div class="btn-group">
+              <button class="btn btn-default btn-md rsvp_yes {{maybeChosen "yes"}}"><i class="fa fa-check-circle-o"></i> 참여합니다</button> 
+              <button class="btn btn-default btn-md rsvp_maybe {{maybeChosen "maybe"}}">아마도?</button> 
+              <button class="btn btn-default btn-md rsvp_no {{maybeChosen "no"}}">못가요 OTL</button>
+              </div>
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  공유하기
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu text-left social-share" role="menu" aria-labelledby="btnGroupDrop1">
+                  <li><a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="twitter-share-button" target="_blank"><i class="fa fa-twitter fa-fw"></i> Tweet</a></li>
+                  <li><a href="https://www.facebook.com/sharer/sharer.php?u={{text}}&t={{title}}%20-%20{{description}}" class="facebook-share-button" target="_blank"><i class="fa fa-facebook fa-fw"></i> Facebook</a></li>
+                </ul>
+              </div>
             {{else}}
               <i>가입하고 이상한 모임 함께해요!</i>
             {{/if}}
-            <p><small>{{creatorName}}님 작성</small></p>
           </div>
-
           {{> comments}}
 
         {{/with}}
