@@ -7,7 +7,7 @@ I am here 이상한 모임 좌표 알림 서비스
 * 이상한 모임이란? http://weirdmeetup.com
 * 이상한모임 팀블로그 http://we.weirdmeetup.com
 
-Installation
+Requirements
 ------------
 
 `nodejs`, `meteor` and `meteorite` are required.
@@ -15,6 +15,9 @@ Installation
   * [nodejs](http://nodejs.org/)
   * [meteor](https://www.meteor.com/)
   * [meteorite](https://github.com/oortcloud/meteorite/)
+
+Installation
+------------
 
 Download and install `nodejs` from [website](http://nodejs.org/). And then install `meteor`.
 
