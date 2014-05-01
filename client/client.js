@@ -111,6 +111,10 @@ Template.details.creatorName = function () {
   return displayName(owner);
 };
 
+Template.details.canManage = function () {
+  return this.owner === Meteor.userId();
+};
+
 Template.details.canRemove = function () {
   return this.owner === Meteor.userId() && attending(this) === 0;
 };
@@ -123,8 +127,12 @@ Template.details.maybeChosen = function (what) {
   var myRsvp = _.find(this.rsvps, function (r) {
     return r.user === Meteor.userId();
   }) || {};
-
-  return what == myRsvp.rsvp ? "chosen btn-inverse" : "";
+  var chosen = {
+    'yes' : 'success',
+    'maybe' : 'info',
+    'no': 'danger'
+  };
+  return what == myRsvp.rsvp ? "chosen btn-" + chosen[what] : "";
 };
 
 Template.details.text = function () {
@@ -468,10 +476,14 @@ var clearCommentError = function() {
   showCommentError(null);
 };
 
+Template.comments.anyComments = function () {
+  return Comments.find( {partyId: this._id} ).count() > 0;
+};
+
 Template.comments.helpers ( {
   comments: function() {
     /* retrieve comments for the party */
-    return Comments.find( {partyId: this._id} );
+    return Comments.find( {partyId: this._id}, {sort: {submitted : -1}} );
   }
 });
 
@@ -516,6 +528,9 @@ Template.comment.helpers ( {
   submittedText: function() {
     /* convert 'submitted' field to readable text */
     return new Date(this.submitted).toLocaleString();
+  },
+  submittedMomentText: function() {
+    return moment(this.submitted).fromNow();
   }
 });
 

@@ -14,7 +14,7 @@
   <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-global">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -22,7 +22,7 @@
         </button>
        <a class="navbar-brand" href="{{pathFor 'mapPage'}}">I'm here #이상한모임</a>
       </div>
-      <div class="navbar-collapse collapse">
+      <div id="nav-global" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li><a href="http://weirdmeetup.com/" target="_blank">이상한 모임이 뭔가요?</a></li>
         </ul>
@@ -101,73 +101,83 @@
             <ul class="nav navbar-nav">
               <li><a href="{{pathFor 'mapPage'}}" class="back-to-the-list">목록보기</a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#">공유하기</a></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">관리 <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#">2시간 연장하기</a></li>
-                  <li><a href="#">삭제하기</a></li>
-                </ul>
-              </li>
-            </ul>
+            {{#with party}}
+              {{#if canManage}}
+              <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">관리 <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                      <li><a href="#">2시간 연장하기</a></li>
+                      {{#if canRemove}}
+                        <li><a href="#" class="remove">모임 삭제하기</a></li>
+                      {{/if}}
+                      {{#if canFinish}}
+                        <li><a href="#" class="remove">모임 종료하기</a></li>
+                      {{/if}}
+                  </ul>
+                </li>
+              </ul>
+              {{/if}}
+            {{/with}}
           </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
       </nav>
       <div class="meetup-info col-sm-12">
         {{#with party}}
-          <h1>{{title}}</h1>
-          #이상한모임 공유하기
-          <a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="twitter-share-button" target="_blank">Tweet</a>
+          <h1 class="page-header h4">
+            {{title}} <small>{{creatorName}}님 작성</small>
+            <small class="created pull-right"><time title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
+              {{legibleDateTimeText created}}
+            </time></small>
+          </h1>
+
           <div class="description">{{description}}</div>
-
-          {{> attendance}}
           
-        <div>
-          <strong>Created</strong>
-          <time class="label label-default pull-right" title="{{dateTimeText created}}" datetime="{{dateTimeText created}}">
-            {{legibleDateTimeText created}}
-          </time>
-        </div>
-        <div>
-          <strong>Begins</strong>
-          <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
-            {{legibleDateTimeText begins}}
-          </time>
-        </div>
-        <div>
-          <strong>Until</strong>
-          <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
-            {{legibleDateTimeText expires}}
-          </time>
-        </div>
+          <div class="row">
+            <div class="col-md-6">
+              {{> attendance}}
+            </div>
 
+            <div class="col-md-6">
+              <div class="schedule">
+                <div>
+                  <strong>Begins</strong>
+                  <time class="label label-default pull-right" title="{{dateTimeText begins}}" datetime="{{dateTimeText begins}}">
+                    {{legibleDateTimeText begins}}
+                  </time>
+                </div>
+                <div>
+                  <strong>Until</strong>
+                  <time class="label label-default pull-right" title="{{dateTimeText expires}}" datetime="{{dateTimeText expires}}">
+                    {{legibleDateTimeText expires}}
+                  </time>
+                </div>
+              </div>
+
+            </div>
+          </div>
           <div class="rsvp-buttons text-center">
             {{#if currentUser}}
-              <input type="button" value="나도 갈래염!"
-                     class="btn btn-default btn-sm rsvp_yes {{maybeChosen "yes"}}">
-              <input type="button" value="아마도"
-                     class="btn btn-default btn-sm rsvp_maybe {{maybeChosen "maybe"}}">
-              <input type="button" value="못가요.."
-                     class="btn btn-default btn-sm rsvp_no {{maybeChosen "no"}}">
+              <div class="btn-group">
+              <button class="btn btn-default btn-md rsvp_yes {{maybeChosen "yes"}}"><i class="fa fa-check-circle-o"></i> 참여합니다</button> 
+              <button class="btn btn-default btn-md rsvp_maybe {{maybeChosen "maybe"}}">아마도?</button> 
+              <button class="btn btn-default btn-md rsvp_no {{maybeChosen "no"}}">못가요 OTL</button>
+              </div>
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  공유하기
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu text-left social-share" role="menu" aria-labelledby="btnGroupDrop1">
+                  <li><a href="https://twitter.com/intent/tweet?original_referer={{text}}&related=jasoncosta&text={{title}} {{description}}&tw_p=tweetbutton&url={{text}}&via=we_weirdmeetup" class="twitter-share-button" target="_blank"><i class="fa fa-twitter fa-fw"></i> Tweet</a></li>
+                  <li><a href="https://www.facebook.com/sharer/sharer.php?u={{text}}&t={{title}}%20-%20{{description}}" class="facebook-share-button" target="_blank"><i class="fa fa-facebook fa-fw"></i> Facebook</a></li>
+                </ul>
+              </div>
             {{else}}
               <i>가입하고 이상한 모임 함께해요!</i>
             {{/if}}
-            <p><small>{{creatorName}}님 작성</small></p>
           </div>
-
-          {{#if canRemove}}
-            <div class="alert alert-info"><small>
-              아무도 안온다면 과감하게 
-                <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
-            </small></div>
-          {{/if}}
-          {{#if canFinish}}
-            <div class="alert alert-info"><small>
-              이상한 모임이 종료되었다면 
-                <strong><a href="#" class="remove">목록에서 삭제하기</a></strong>.
-            </small></div>
-          {{/if}}
           {{> comments}}
 
         {{/with}}
@@ -364,29 +374,33 @@
 
 <template name="comments">
   <div><strong>Comments</strong></div>
-    <ul class="list-group">
-    {{#each comments}}
-      {{> comment }}
-    {{/each}}
-    </ul>
 
     {{#if currentUser}}
       {{ > commentform }}
     {{else}}
       <p class="text-center">Sign in to comment</p>
     {{/if}}
+    {{#if anyComments}}
+    <ul class="list-group comments">
+    {{#each comments}}
+      {{> comment }}
+    {{/each}}
+    </ul>
+    {{else}}
+    <p class="no-comments"><i class="fa fa-comments"></i> Be the first to comment.</p>
+    {{/if}}
 </template>
 
 <template name="comment">
   <li class="list-group-item">
-    <span class="glyphicon glyphicon-user"></span>
-    <span class="author">{{author}}</span>
-    <p>
-      <span class="date">on {{submittedText}}</span>
-    </p>
-    <div class="well well-small">
-    <p>{{body}}</p>
+    <div class="meta">
+      <i class="fa fa-user"></i>
+      <span class="author"><a href="#">{{author}}</a></span>
+      <time class="submitted" title="{{submittedText}}" datetime="{{submittedText}}">
+        {{submittedMomentText}}
+      </time>
     </div>
+    <p>{{body}}</p>
   </li>
 </template>
 
@@ -394,9 +408,12 @@
   {{#if error}}
     <div class="bg-warning" style="padding: 5px;">{{error}}</div>
   {{/if}}
-  <div class="well well-small">
-      <textarea class="comment-body form-control" id="comment-body" rows="2"></textarea>   
-      <button type="button" class="btn btn-sm btn-primary comment">Comment</button>
+
+  <div class="comment-form input-group input-group-sm">
+    <input type="text" class="comment-body form-control">
+    <span class="input-group-btn">
+      <button class="btn btn-primary btn-sm comment" type="button"><i class="fa fa-comment"></i> Send</button>
+    </span>
   </div>
 </template>
 
